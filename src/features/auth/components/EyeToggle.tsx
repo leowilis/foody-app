@@ -1,3 +1,5 @@
+import Eye from '@/assets/eye.svg'
+
 interface EyeToggleProps {
   show: boolean
   onToggle: () => void
@@ -12,8 +14,8 @@ export default function EyeToggle({ show, onToggle }: EyeToggleProps) {
       aria-label={show ? 'Hide password' : 'Show password'}
     >
       <img
-        src="/images/common/eye.svg"
-        alt=""
+        src={Eye}
+        alt="Eye Toggle"
         className="h-5 w-5 opacity-80"
         draggable={false}
       />
