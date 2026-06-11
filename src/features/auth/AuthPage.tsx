@@ -69,16 +69,16 @@ export default function AuthPage() {
               value={tab}
               onValueChange={(v) => setTab(v as 'signin' | 'signup')}
             >
-              <TabsList className='h-14 w-full cursor-pointer rounded-full bg-neutral-100 p-1'>
+              <TabsList className='h-16 w-full cursor-pointer rounded-full bg-neutral-100 p-1'>
                 <TabsTrigger
                   value='signin'
-                  className='h-full w-1/2 cursor-pointer rounded-full text-base font-semibold text-neutral-600 data-[state=active]:bg-white data-[state=active]:text-neutral-900 data-[state=active]:shadow-sm'
+                  className='h-full w-1/2 cursor-pointer rounded-full text-base font-semibold text-neutral-600 data-active:bg-white data-active:text-neutral-900 data-active:shadow-sm'
                 >
                   Sign in
                 </TabsTrigger>
                 <TabsTrigger
                   value='signup'
-                  className='h-full w-1/2 cursor-pointer rounded-full text-base font-semibold text-neutral-600 data-[state=active]:bg-white data-[state=active]:text-neutral-900 data-[state=active]:shadow-sm'
+                  className='h-full w-1/2 cursor-pointer rounded-full text-base font-semibold text-neutral-600 data-active:bg-white data-active:text-neutral-900 data-active:shadow-sm'
                 >
                   Sign up
                 </TabsTrigger>
