@@ -1,11 +1,11 @@
-import burgerSvg from '@/assets/burger.svg';
-import MainLogo from '@/assets/logo-foody.svg';
+import React, { startTransition } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AnimatePresence } from 'framer-motion';
-import React, { startTransition } from 'react';
 import SignInForm from './components/SignInForm';
 import SignUpForm from './components/SignUpForm';
-import { useLocation } from 'react-router-dom';
+import burgerSvg from '@/assets/burger.svg';
+import MainLogo from '@/assets/logo-foody.svg';
 
 export default function AuthPage() {
   const location = useLocation();
