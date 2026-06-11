@@ -2,12 +2,26 @@ import burgerSvg from '@/assets/burger.svg';
 import MainLogo from '@/assets/logo-foody.svg';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AnimatePresence } from 'framer-motion';
-import React from 'react';
+import React, { startTransition } from 'react';
 import SignInForm from './components/SignInForm';
 import SignUpForm from './components/SignUpForm';
+import { useLocation } from 'react-router-dom';
 
 export default function AuthPage() {
+  const location = useLocation();
   const [tab, setTab] = React.useState<'signin' | 'signup'>('signin');
+
+  React.useEffect(() => {
+    const stateTab = (location.state as { tab?: string } | null)?.tab;
+    const searchTab = new URLSearchParams(location.search).get('tab');
+    const nextTab = stateTab ?? searchTab;
+
+    if (nextTab === 'signin' || nextTab === 'signup') {
+      startTransition(() => {
+        setTab(nextTab);
+      });
+    }
+  }, [location.search, location.state]);
 
   return (
     <div className='h-screen w-full bg-white'>
@@ -55,7 +69,7 @@ export default function AuthPage() {
               value={tab}
               onValueChange={(v) => setTab(v as 'signin' | 'signup')}
             >
-              <TabsList className='h-14 w-full cursor pointer rounded-full bg-neutral-100 p-1'>
+              <TabsList className='h-14 w-full cursor-pointer rounded-full bg-neutral-100 p-1'>
                 <TabsTrigger
                   value='signin'
                   className='h-full w-1/2 cursor-pointer rounded-full text-base font-semibold text-neutral-600 data-[state=active]:bg-white data-[state=active]:text-neutral-900 data-[state=active]:shadow-sm'
