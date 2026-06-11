@@ -39,4 +39,4 @@ export const signUpSchema = z
 
 // Static TypeScript type inferred directly from the runtime signInSchema blueprint
 export type SignInValues = z.infer<typeof signInSchema>;
-export type signUpSchema = z.infer<typeof signUpSchema>; // Capitalized and renamed to align with best practices
+export type SignUpValues = z.infer<typeof signUpSchema>; // Capitalized and renamed to align with best practices
