@@ -1,19 +1,20 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
-import AuthPage from '../features/auth/AuthPage';
+import { createBrowserRouter } from 'react-router-dom';
+import AuthPage from '@/features/auth/AuthPage';
+import HomePage from '@/features/home/HomePage';
+import ProtectedRoute from '@/components/layout/ProctectedRoute';
 
 /**
- * Global application router initialization.
- * Configures the primary navigation paths and anchors high-level entry components
+ * Global application router configuration.
+ * Defines public auth routes and protected app routes.
  */
 export const router = createBrowserRouter([
   {
-    // Gateway interceptor: automatically redirects root requests to the auth terminal
-    path: '/',
-    element: <Navigate to='/auth' replace />,
-  },
-  {
-    // Endpoint mapping for user authentication flows (Login / Registration)
     path: '/auth',
     element: <AuthPage />,
+  },
+  {
+    path: '/',
+    element: <ProtectedRoute />,
+    children: [{ index: true, element: <HomePage /> }],
   },
 ]);
