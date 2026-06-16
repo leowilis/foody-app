@@ -1,4 +1,4 @@
-export type RecomendedItem = {
+export type RecommendedItem = {
   id: number;
   name: string;
   star: number;
@@ -14,8 +14,8 @@ export type RecommendedResponse = {
   success: boolean;
   message: string;
   data?: {
-    recommendations?: RecomendedItem[];
-    restaurant?: RecomendedItem[];
+    recommendations?: RecommendedItem[];
+    restaurant?: RecommendedItem[];
     pagination?: {
       page?: number;
       limit?: number;
