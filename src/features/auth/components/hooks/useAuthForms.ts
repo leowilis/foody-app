@@ -11,10 +11,7 @@ import {
   type SignUpValues,
 } from '@/features/auth/schema';
 
-/**
- * Sanitizes and formats Indonesian phone numbers into the international standard format.
- * Strips non-digit characters and ensures the string starts with country code '62'.
- */
+// Formats Indonesian phone numbers to international format (62xxx).
 const formatPhone = (phone: string): string => {
   const digits = phone.replace(/\D/g, '');
   if (digits.startsWith('0')) return '62' + digits.slice(1);
@@ -23,11 +20,8 @@ const formatPhone = (phone: string): string => {
 };
 
 /**
- * Custom React hook orchestration for handling the Sign-In (Login) form state and lifecycle.
- * Manages form initialization, Zod schema validation, network submission, and token storage orchestration.
- *
- * Includes logical handling for the "Remember Me" toggle to isolate authorization data between
- * `localStorage` (persistent) and `sessionStorage` (temporary).
+ * Handles sign-in form state, validation, and token storage.
+ * Supports "Remember Me" via localStorage vs sessionStorage.
  */
 export function useSignInForm() {
   const navigate = useNavigate();
@@ -72,12 +66,8 @@ export function useSignInForm() {
 }
 
 /**
- * Custom React hook orchestration for handling the Sign-Up (Registration) form state and lifecycle.
- * Manages initialization for new user profiles, phone normalization, and processes input validation.
- *
- * Integrates an advanced error catching engine that automatically parses back-end server messages
- * and maps validation failures directly onto their respective fields (`email`, `phone`, `password`)
- * inside the React Hook Form UI register.
+ * Handles sign-up form state, validation, and phone formatting.
+ * Maps server-side field errors back to their respective form fields.
  */
 export function useSignUpForm() {
   const navigate = useNavigate();
