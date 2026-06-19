@@ -1,26 +1,21 @@
-import { useCallback, useEffect } from 'react';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
-import Search from '@/assets/search.svg';
-import type { RecommendedItem } from '../types';
+import useEmblaCarousel from 'embla-carousel-react'
+import Autoplay from 'embla-carousel-autoplay'
+import Search from '@/assets/search.svg'
+import type { RecommendedItem } from '../types'
 
 interface HeroSectionProps {
-  keyword: string;
-  onSearch: (value: string) => void;
-  slides: RecommendedItem[];
+  keyword: string
+  onSearch: (value: string) => void
+  slides: RecommendedItem[]
 }
 
-// Hero banner with auto-sliding restaurant images and search input.
-export default function HeroSection({
-  keyword,
-  onSearch,
-  slides,
-}: HeroSectionProps) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
+/** Hero banner with auto-sliding restaurant images and search input. */
+export default function HeroSection({ keyword, onSearch, slides }: HeroSectionProps) {
+  const [emblaRef] = useEmblaCarousel({ loop: true }, [
     Autoplay({ delay: 3000, stopOnInteraction: false }),
-  ]);
+  ])
 
-  const hasSlides = slides.length > 0;
+  const hasSlides = slides.flatMap((item) => item.images).length > 0
 
   return (
     <>
@@ -32,7 +27,7 @@ export default function HeroSection({
                 item.images.map((img, i) => (
                   <div
                     key={`${item.id}-${i}`}
-                    className='relative min-w-full flex-shrink-0 h-full'
+                    className='relative h-full min-w-full flex-shrink-0'
                   >
                     <img
                       src={img}
@@ -67,11 +62,7 @@ export default function HeroSection({
           </div>
 
           <div className='relative w-full'>
-            <img
-              src={Search}
-              alt=''
-              className='absolute left-4 top-4 z-50 h-6 w-6'
-            />
+            <img src={Search} alt='' className='absolute left-4 top-4 z-50 h-6 w-6' />
             <input
               id='searchInput'
               name='searchInput'
@@ -85,5 +76,5 @@ export default function HeroSection({
         </div>
       </div>
     </>
-  );
+  )
 }
