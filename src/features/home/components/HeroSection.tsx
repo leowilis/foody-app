@@ -1,3 +1,5 @@
+import Search from '@/assets/search.svg'
+
 interface HeroSectionProps {
   keyword: string;
   onSearch: (value: string) => void;
@@ -29,7 +31,7 @@ export default function HeroSection({ keyword, onSearch }: HeroSectionProps) {
 
           <div className='relative w-full'>
             <img
-              src='/images/common/search.svg'
+              src={Search}
               alt=''
               className='absolute left-4 top-4 z-50 h-6 w-6'
             />
