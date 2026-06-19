@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import categoryFilterReducer from '@/features/filters/categoryFilterSlice'
 
 /**
  * Central application Redux store initialization.
@@ -7,7 +8,10 @@ import { configureStore } from '@reduxjs/toolkit';
  * slices and auto-injecting production middleware (like Redux Thunk).
  */
 export const store = configureStore({
-  reducer: {}, // Domain slices will be registered here
+  reducer: {
+    categoryFilter: categoryFilterReducer,
+  }, // Domain slices will be registered here
+  
 });
 
 export type RootState = ReturnType<typeof store.getState>;
