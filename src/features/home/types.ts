@@ -15,7 +15,7 @@ export type RecommendedResponse = {
   message: string;
   data?: {
     recommendations?: RecommendedItem[];
-    restaurant?: RecommendedItem[];
+    restaurants?: RecommendedItem[];
     pagination?: {
       page?: number;
       limit?: number;
