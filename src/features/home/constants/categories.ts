@@ -1,36 +1,15 @@
-import type { ActiveList } from '../types';
+import categoryAll from '@/assets/category-all.svg';
+import categoryNearby from '@/assets/category-nearby.svg';
+import categoryDiscount from '@/assets/category-discount.svg';
+import categoryBestSeller from '@/assets/category-best-seller.svg';
+import categoryDelivery from '@/assets/category-delivery.svg';
+import categoryLunch from '@/assets/category-lunch.svg';
 
-export interface CategoryItem {
-  key: ActiveList | 'nearby-nav';
-  label: string;
-  icon: string;
-}
-
-export const CATEGORIES: CategoryItem[] = [
-  {
-    key: 'all-restaurants',
-    label: 'All Restaurant',
-    icon: '/images/common/category-all.svg',
-  },
-  {
-    key: 'nearby-nav',
-    label: 'Nearby',
-    icon: '/images/common/category-nearby.svg',
-  },
-  {
-    key: 'discount',
-    label: 'Discount',
-    icon: '/images/common/category-discount.svg',
-  },
-  {
-    key: 'best-seller',
-    label: 'Best Seller',
-    icon: '/images/common/category-best-seller.svg',
-  },
-  {
-    key: 'delivery',
-    label: 'Delivery',
-    icon: '/images/common/category-delivery.svg',
-  },
-  { key: 'lunch', label: 'Lunch', icon: '/images/common/category-lunch.svg' },
+export const CATEGORIES = [
+  { key: 'all-restaurants', label: 'All Restaurant', icon: categoryAll },
+  { key: 'nearby-nav', label: 'Nearby', icon: categoryNearby },
+  { key: 'discount', label: 'Discount', icon: categoryDiscount },
+  { key: 'best-seller', label: 'Best Seller', icon: categoryBestSeller },
+  { key: 'delivery', label: 'Delivery', icon: categoryDelivery },
+  { key: 'lunch', label: 'Lunch', icon: categoryLunch },
 ];
