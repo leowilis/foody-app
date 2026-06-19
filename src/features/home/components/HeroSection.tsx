@@ -1,19 +1,56 @@
-import Search from '@/assets/search.svg'
+import { useCallback, useEffect } from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
+import Search from '@/assets/search.svg';
+import type { RecommendedItem } from '../types';
 
 interface HeroSectionProps {
   keyword: string;
   onSearch: (value: string) => void;
+  slides: RecommendedItem[];
 }
 
-// Hero banner with background image and search input.
-export default function HeroSection({ keyword, onSearch }: HeroSectionProps) {
+// Hero banner with auto-sliding restaurant images and search input.
+export default function HeroSection({
+  keyword,
+  onSearch,
+  slides,
+}: HeroSectionProps) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
+    Autoplay({ delay: 3000, stopOnInteraction: false }),
+  ]);
+
+  const hasSlides = slides.length > 0;
+
   return (
     <>
       <div className='relative h-162 w-full overflow-hidden md:h-206.75'>
-        <div
-          className='absolute inset-0 bg-cover bg-center bg-no-repeat'
-          style={{ backgroundImage: `url('/images/common/burger-hero.svg')` }}
-        />
+        {hasSlides ? (
+          <div className='h-full w-full' ref={emblaRef}>
+            <div className='flex h-full'>
+              {slides.flatMap((item) =>
+                item.images.map((img, i) => (
+                  <div
+                    key={`${item.id}-${i}`}
+                    className='relative min-w-full flex-shrink-0 h-full'
+                  >
+                    <img
+                      src={img}
+                      alt={item.name}
+                      className='h-full w-full object-cover'
+                    />
+                  </div>
+                )),
+              )}
+            </div>
+          </div>
+        ) : (
+          <div
+            className='absolute inset-0 bg-cover bg-center bg-no-repeat'
+            style={{ backgroundImage: `url('/images/common/burger-hero.svg')` }}
+          />
+        )}
+
         <div className='absolute inset-0 z-10 bg-linear-to-t from-black/80 via-black/40 to-transparent md:hidden' />
         <div className='absolute inset-0 z-10 hidden bg-linear-to-t from-black to-transparent md:block' />
       </div>
