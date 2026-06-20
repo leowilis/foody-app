@@ -23,7 +23,7 @@ export default function HeroSection({
 
   return (
     <>
-      <div className='relative h-162 w-full overflow-hidden md:h-206.75'>
+      <div className='relative h-[420px] w-full overflow-hidden md:h-[600px]'>
         {hasSlides ? (
           <div className='h-full w-full' ref={emblaRef}>
             <div className='flex h-full'>
@@ -31,13 +31,15 @@ export default function HeroSection({
                 item.images.map((img, i) => (
                   <div
                     key={`${item.id}-${i}`}
-                    className='relative h-full min-w-full flex-shrink-0'
+                    className='relative min-w-full flex-shrink-0 h-full'
                   >
                     <img
                       src={img}
                       alt={item.name}
-                      className='h-full w-full object-cover'
+                      className='h-full w-full object-cover object-center'
                     />
+                    {/* Gradient overlay per slide agar text tetap terbaca */}
+                    <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent' />
                   </div>
                 )),
               )}
@@ -54,7 +56,7 @@ export default function HeroSection({
         <div className='absolute inset-0 z-10 hidden bg-linear-to-t from-black to-transparent md:block' />
       </div>
 
-      <div className='absolute top-52.5 z-10 flex w-full flex-col items-center justify-center gap-6 px-4 text-center md:top-81.5 md:px-0'>
+      <div className='absolute bottom-16 z-10 flex w-full flex-col items-center justify-center gap-4 px-4 text-center md:bottom-24'>
         <div className='flex flex-col gap-6 md:gap-10'>
           <div className='flex flex-col gap-1 md:gap-2'>
             <h1 className='text-[36px] font-extrabold leading-11 text-white md:text-[48px] md:leading-15'>
