@@ -39,7 +39,7 @@ export default function HeroSection({
                       className='h-full w-full object-cover object-center'
                     />
                     {/* Gradient overlay per slide agar text tetap terbaca */}
-                    <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent' />
+                    <div className='absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/20' />
                   </div>
                 )),
               )}
@@ -48,7 +48,7 @@ export default function HeroSection({
         ) : (
           <div
             className='absolute inset-0 bg-cover bg-center bg-no-repeat'
-            style={{ backgroundImage: `url('/images/common/burger-hero.svg')` }}
+            style={{ backgroundImage: `url('/assets/burger-hero.svg')` }}
           />
         )}
 
@@ -56,22 +56,22 @@ export default function HeroSection({
         <div className='absolute inset-0 z-10 hidden bg-linear-to-t from-black to-transparent md:block' />
       </div>
 
-      <div className='absolute bottom-16 z-10 flex w-full flex-col items-center justify-center gap-4 px-4 text-center md:bottom-24'>
-        <div className='flex flex-col gap-6 md:gap-10'>
+      <div className='absolute inset-x-0 bottom-0 z-10 flex flex-col gap-3 px-4 pb-6 md:items-center md:pb-10 md:text-center'>
+        <div className='flex flex-col gap-0.5 md:gap-10'>
           <div className='flex flex-col gap-1 md:gap-2'>
-            <h1 className='text-[36px] font-extrabold leading-11 text-white md:text-[48px] md:leading-15'>
+            <h1 className='text-[24px] font-extrabold leading-tight text-white drop-shadow-md md:text-[40px]'>
               Explore Culinary Experiences
             </h1>
-            <p className='text-[18px] font-bold leading-8 text-white -tracking-[0.03em] md:text-[24px] md:leading-9 md:tracking-normal'>
+            <p className='text-[13px] font-medium leading-8 text-white/80 drop-shadow-sm md:text-[16px]'>
               Search and refine your choice to discover the perfect restaurant.
             </p>
           </div>
 
-          <div className='relative w-full'>
+          <div className='relative w-full md:max-w-xl'>
             <img
               src={Search}
               alt=''
-              className='absolute left-4 top-4 z-50 h-6 w-6'
+              className='absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 opacity-50'
             />
             <input
               id='searchInput'
@@ -80,7 +80,7 @@ export default function HeroSection({
               value={keyword}
               onChange={(e) => onSearch(e.target.value)}
               placeholder='Search restaurants, food and drink'
-              className='h-14 w-full rounded-2xl bg-white pl-13 text-[14px] leading-7 text-black -tracking-[0.02em] placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-white md:text-[16px] md:leading-7.5'
+              className='h-12 w-full rounded-2xl bg-white/95 pl-12 pr-4 text-[14px] text-black shadow-lg placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-white/50 md:h-13 md:text-[15px]'
             />
           </div>
         </div>
