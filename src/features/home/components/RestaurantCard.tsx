@@ -1,3 +1,4 @@
+import StarRating from '@/components/ui/starRating';
 import type { RecommendedItem } from '../types';
 
 interface RestaurantCardProps {
@@ -21,12 +22,7 @@ export default function RestaurantCard({ item, onClick }: RestaurantCardProps) {
         <h3 className='text-[16px] font-extrabold leading-7.5 text-neutral-950 -tracking-[0.02em] md:text-[18px] md:leading-8'>
           {item.name}
         </h3>
-        <div className='flex flex-row gap-1'>
-          <img src='/images/common/star.svg' className='h-6 w-6' alt='' />
-          <span className='text-[14px] font-medium leading-7 text-neutral-950 -tracking-[0.03em] md:text-[16px] md:leading-7.5'>
-            {item.star}
-          </span>
-        </div>
+        <StarRating rating={item.star} />
         <span className='text-[14px] leading-7 text-neutral-950 -tracking-[0.02em] md:text-[16px] md:leading-7.5'>
           {item.place}
         </span>
