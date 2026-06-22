@@ -16,7 +16,7 @@ const getNextPage = (
       ? pagination.page + 1
       : undefined;
   }
-  const count = lastPage.data?.restaurant?.length ?? 0;
+  const count = lastPage.data?.restaurants?.length ?? 0;
   return count < LIST_LIMIT ? undefined : pages.length + 1;
 };
 
