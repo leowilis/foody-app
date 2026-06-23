@@ -8,6 +8,7 @@ export type RecommendedItem = {
   category: string;
   reviewCount: number;
   isFrequentlyOrdered: boolean;
+  distance?: number
 };
 
 export type RecommendedResponse = {
