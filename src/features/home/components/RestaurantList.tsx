@@ -99,13 +99,15 @@ export default function RestaurantList({
   }
   return (
     <>
-      {items.map((item) => (
-        <RestaurantCard
-          key={item.id}
-          item={item}
-          onClick={() => navigate(`/details/${item.id}`)}
-        />
-      ))}
+      <div className='flex flex-col divide-y divide-neutral-100'>
+        {items.map((item) => (
+          <RestaurantCard
+            key={item.id}
+            item={item}
+            onClick={() => navigate(`/details/${item.id}`)}
+          />
+        ))}
+      </div>
     </>
   );
 }
