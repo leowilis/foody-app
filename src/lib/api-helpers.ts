@@ -5,6 +5,9 @@ export const getErrorMessage = (err: unknown): string => {
   if (axios.isAxiosError(err)) {
     const data = err.response?.data as { message?: string } | undefined;
     if (data?.message) return data.message;
+    if (err.code === 'ECONNABORTED')
+      return 'Request timeout. Please try again.';
+    if (!err.response) return 'Unable to connect to server.';
   }
   return 'Failed to load data.';
 };
