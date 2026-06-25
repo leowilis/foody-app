@@ -2,6 +2,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { getErrorMessage } from '@/lib/api-helpers';
 import type { DetailResponse } from '../type';
+import { DetailResponseSchema } from '../schemas/restaurantSchema';
 
 // Fetches restaurant detail including menus and reviews with pagination.
 export function useRestaurantDetail(
@@ -15,7 +16,7 @@ export function useRestaurantDetail(
       const res = await api.get<DetailResponse>(`/api/resto/${id}`, {
         params: { limitMenu: menuLimit, limitReview: reviewLimit },
       });
-      return res.data;
+      return DetailResponseSchema.parse(res.data);
     },
     enabled: Boolean(id),
     placeholderData: keepPreviousData,
