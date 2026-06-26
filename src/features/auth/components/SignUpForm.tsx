@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { useSignUpForm } from '@/features/auth/components/hooks/useAuthForms';
+import { useSignUpForm } from '@/features/auth/hooks/useAuthForms';
 import FieldWrapper from './FieldWrapper';
 import EyeToggle from './EyeToggle';
 import SubmitButton from './SubmitButton';
