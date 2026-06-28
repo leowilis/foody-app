@@ -1,13 +1,12 @@
-import { formatDate } from '@/lib/format'
-import type { ReviewItem } from '../type'
-import StarRating from '@/components/ui/starRating'
-
+import { formatDate } from '@/lib/format';
+import type { ReviewItem } from '../type';
+import StarRating from '@/components/ui/starRating';
 
 interface ReviewCardProps {
-  review: ReviewItem
+  review: ReviewItem;
 }
 
-/** Single review card showing user info, star rating, and comment. */
+// Single review card showing user info, star rating, and comment.
 export default function ReviewCard({ review }: ReviewCardProps) {
   return (
     <div className='flex flex-col gap-4 rounded-3xl px-4 py-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)]'>
@@ -34,5 +33,5 @@ export default function ReviewCard({ review }: ReviewCardProps) {
         </p>
       </div>
     </div>
-  )
+  );
 }
