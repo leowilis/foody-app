@@ -51,6 +51,16 @@ export default function ShareDialog({
         >
           Copy Link
         </button>
+        {status === 'copied' && (
+          <p className='text-sm font-semibold text-green-600'>
+            Link copied successfully.
+          </p>
+        )}
+        {status === 'failed' && (
+          <p className='text-sm font-semibold text-red-600'>
+            Failed to copy link. Please try again.
+          </p>
+        )}
       </DialogContent>
     </Dialog>
   );
