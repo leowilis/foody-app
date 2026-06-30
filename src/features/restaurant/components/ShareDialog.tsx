@@ -12,7 +12,7 @@ interface ShareDialogProps {
   onOpenChange: (open: boolean) => void;
   shareUrl: string;
 }
-
+// Fallback dialog for copying the share link on devices without native share.
 export default function ShareDialog({
   open,
   onOpenChange,
@@ -21,6 +21,15 @@ export default function ShareDialog({
   const [status, setStatus] = React.useState<'idle' | 'copied' | 'failed'>(
     'idle',
   );
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setStatus('copied');
+    } catch {
+      setStatus('failed');
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
