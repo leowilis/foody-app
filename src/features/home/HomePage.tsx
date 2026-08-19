@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import HeroSection from './components/HeroSection';
 import CategoryGrid from './components/CategoryGrid';
 import RestaurantList from './components/RestaurantList';
 import LoadMoreButton from './components/LoadMoreButton';
 import { useActiveListData } from './hooks/useActiveListData';
+import { setKeyword } from '@/features/search/searchSlice';
+import type { RootState } from '@/app/store';
 import type { ActiveList } from './types';
 
 // Maps the active list key to a human-readable section title.
@@ -40,7 +43,8 @@ const getToken = () =>
 // Main home screen — browse restaurants, search, and filter by category.
 export default function HomePage() {
   const navigate = useNavigate();
-  const [keyword, setKeyword] = useState('');
+  const dispatch = useDispatch();
+  const keyword = useSelector((state: RootState) => state.search.keyword);
   const [activeList, setActiveList] = useState<ActiveList>(
     getToken() ? 'recommended' : 'all-restaurants',
   );
@@ -60,9 +64,9 @@ export default function HomePage() {
 
   const slides = recommendedQuery.data?.data?.recommendations ?? [];
 
-  // Syncs keyword state and switches to search mode when input is non-empty.
+  // Syncs keyword to Redux and switches to search mode when input is non-empty.
   const handleSearch = (value: string) => {
-    setKeyword(value);
+    dispatch(setKeyword(value));
     setActiveList(value.trim().length > 0 ? 'search' : 'recommended');
   };
 
