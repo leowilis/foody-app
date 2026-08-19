@@ -34,7 +34,7 @@ export default function CategoryGrid({ onSelect }: CategoryGridProps) {
             <img
               src={category.icon}
               className='h-12 w-12 md:h-16.25 md:w-16.25'
-              alt=''
+              alt={`Category ${category.label}`}
             />
           </div>
           <p className='text-center text-[14px] font-bold leading-7 text-neutral-900 -tracking-[0.02em] md:text-[18px] md:leading-8 md:-tracking-[0.03em]'>
