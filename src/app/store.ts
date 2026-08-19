@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import cartReducer from '@/features/cart/cartSlice'
 import categoryFilterReducer from '@/features/filters/categoryFilterSlice'
-
+import searchReducer from '@/features/search/searchSlice'
 
 /**
  * Central application Redux store initialization.
@@ -13,7 +13,8 @@ export const store = configureStore({
   reducer: {
     cart: cartReducer,
     categoryFilter: categoryFilterReducer,
-  }, // Domain slices will be registered here
+    search: searchReducer,
+  },
 });
 
 // Persist cart to localStorage after every action
