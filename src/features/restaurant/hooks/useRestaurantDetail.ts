@@ -1,10 +1,10 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { getErrorMessage } from '@/lib/api-helpers';
-import type { DetailResponse } from '../type';
 import { DetailResponseSchema } from '../schemas/restaurantSchema';
+import type { DetailResponse } from '../schemas/restaurantSchema';
 
-// Fetches restaurant detail including menus and reviews with pagination.
+/** Fetches restaurant detail with menus and reviews, paginated. */
 export function useRestaurantDetail(
   id: string | undefined,
   menuLimit: number,
