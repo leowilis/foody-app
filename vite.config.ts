@@ -10,13 +10,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'https://be-restaurant-production.up.railway.app/api-swagger/',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
-  },
 })
