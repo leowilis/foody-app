@@ -1,13 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import {
-  COMING_SOON_LISTS,
-  type ActiveList,
-  type RecommendedItem,
-} from '../types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import RestaurantCard from './RestaurantCard';
+import { COMING_SOON_LISTS } from '../types';
+import type { ActiveList, RecommendedItem } from '../types';
 
 interface RestaurantListProps {
   activeList: ActiveList;
@@ -19,7 +16,7 @@ interface RestaurantListProps {
   items: RecommendedItem[];
 }
 
-// Renders the list section: loading skeletons, errors, or restaurant cards
+// Renders skeleton, error, coming soon, or restaurant card list based on active state.
 export default function RestaurantList({
   activeList,
   titleText,
@@ -38,8 +35,7 @@ export default function RestaurantList({
         <Alert>
           <AlertTitle>Coming Soon</AlertTitle>
           <AlertDescription>
-            We're currently developing the {titleText} feature to enhance your
-            experience. Stay tuned!
+            We're currently developing the {titleText} feature. Stay tuned!
           </AlertDescription>
         </Alert>
       </div>
@@ -60,12 +56,12 @@ export default function RestaurantList({
             Please wait a moment.
           </span>
         </div>
-        {Array.from({ length: 3 }).map((_, index) => (
+        {Array.from({ length: 3 }).map((_, i) => (
           <div
-            key={`skeleton-${index}`}
-            className='flex flex-row gap-2 rounded-3xl px-3 py-3 shadow-[0_4px_12px_rgba(0,0,0,0.06)] md:gap-3 md:px-4 md:py-4'
+            key={i}
+            className='flex flex-row gap-3 rounded-3xl px-3 py-3 shadow-[0_4px_12px_rgba(0,0,0,0.06)] md:px-4 md:py-4'
           >
-            <Skeleton className='h-22.5 w-22.5 md:h-30 md:w-30' />
+            <Skeleton className='h-22.5 w-22.5 rounded-2xl md:h-30 md:w-30' />
             <div className='flex w-full flex-col gap-2'>
               <Skeleton className='h-5 w-3/4' />
               <Skeleton className='h-4 w-1/3' />
@@ -87,7 +83,7 @@ export default function RestaurantList({
             <div className='pt-3'>
               <Button
                 onClick={() => navigate('/auth', { state: { tab: 'signin' } })}
-                className='h-10 w-40 cursor-pointer rounded-[100px] bg-primary-100 p-2 text-[14px] font-bold leading-7 text-white -tracking-[0.02em] md:h-11 md:w-60 md:text-[16px] md:leading-7.5'
+                className='h-10 w-40 cursor-pointer rounded-[100px] bg-primary-100 p-2 text-[14px] font-bold leading-7 text-white -tracking-[0.02em] md:h-11 md:w-60'
               >
                 Login to view data
               </Button>
@@ -97,17 +93,29 @@ export default function RestaurantList({
       </div>
     );
   }
+
+  if (items.length === 0) {
+    return (
+      <div className='md:col-span-3'>
+        <Alert>
+          <AlertTitle>No restaurants found</AlertTitle>
+          <AlertDescription>
+            Try a different category or search keyword.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className='flex flex-col divide-y divide-neutral-100'>
-        {items.map((item) => (
-          <RestaurantCard
-            key={item.id}
-            item={item}
-            onClick={() => navigate(`/details/${item.id}`)}
-          />
-        ))}
-      </div>
+      {items.map((item) => (
+        <RestaurantCard
+          key={item.id}
+          item={item}
+          onClick={() => navigate(`/details/${item.id}`)}
+        />
+      ))}
     </>
   );
 }
