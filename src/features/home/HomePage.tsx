@@ -1,15 +1,16 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import type { RootState } from '@/app/store';
+import { clearKeyword } from '@/features/search/searchSlice';
 import HeroSection from './components/HeroSection';
+import SearchSection from './components/SearchSection';
 import CategoryGrid from './components/CategoryGrid';
 import RestaurantList from './components/RestaurantList';
 import LoadMoreButton from './components/LoadMoreButton';
 import { useActiveListData } from './hooks/useActiveListData';
-import type { RootState } from '@/app/store';
 import type { ActiveList } from './types';
 
-// Maps the active list key to a human-readable section title.
 const getTitle = (
   activeList: ActiveList,
   keyword: string,
@@ -18,34 +19,52 @@ const getTitle = (
   switch (activeList) {
     case 'recommended':
       return 'Recommended';
+
     case 'best-seller':
       return 'Best Seller';
+
     case 'all-restaurants':
       return 'All Restaurant';
+
     case 'nearby':
       return `Nearby ( ${nearbyRangeKm} km Range )`;
+
     case 'discount':
       return 'Discount';
+
     case 'delivery':
       return 'Delivery';
+
     case 'lunch':
       return 'Lunch';
-    default:
+
+    case 'search':
       return `Search Result of "${keyword.trim()}"`;
+
+    default:
+      return 'Restaurants';
   }
 };
 
-// Reads auth token from either storage — localStorage takes priority.
 const getToken = () =>
   localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token');
 
-// Main home screen — browse restaurants, search, and filter by category.
 export default function HomePage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const keyword = useSelector((state: RootState) => state.search.keyword);
   const [activeList, setActiveList] = useState<ActiveList>(
     getToken() ? 'recommended' : 'all-restaurants',
   );
+
+  const handleCategorySelect = (list: ActiveList) => {
+    dispatch(clearKeyword());
+    setActiveList(list);
+  };
+
+  const trimmedKeyword = keyword.trim();
+  const resolvedActiveList: ActiveList =
+    trimmedKeyword.length > 0 ? 'search' : activeList;
 
   const {
     items,
@@ -58,48 +77,54 @@ export default function HomePage() {
     allRestaurantsQuery,
     nearbyQuery,
     nearbyRangeKm,
-  } = useActiveListData(activeList, keyword);
+  } = useActiveListData(resolvedActiveList, keyword);
 
   const slides = recommendedQuery.data?.data?.recommendations ?? [];
 
-  const paginatedQuery = (
-    {
-      'best-seller': bestSellerQuery,
-      'all-restaurants': allRestaurantsQuery,
-      nearby: nearbyQuery,
-    } as const
-  )[activeList as 'best-seller' | 'all-restaurants' | 'nearby'];
+  const paginatedQuery =
+    resolvedActiveList === 'best-seller'
+      ? bestSellerQuery
+      : resolvedActiveList === 'all-restaurants'
+        ? allRestaurantsQuery
+        : resolvedActiveList === 'nearby'
+          ? nearbyQuery
+          : null;
 
-  const titleText = getTitle(activeList, keyword, nearbyRangeKm);
+  const titleText = getTitle(resolvedActiveList, keyword, nearbyRangeKm);
 
   return (
-    <>
+    <div className='w-full overflow-x-hidden bg-white antialiased'>
       <HeroSection slides={slides} />
-
       <main
         id='restaurant-discovery'
-        className='relative z-20 mx-auto flex w-full max-w-[1280px] flex-col px-5 sm:px-8 lg:px-10'
+        className='relative z-20 mx-auto flex w-full max-w-[1600px] flex-col px-6 py-4 md:px-12 lg:px-16'
       >
-        <section className='py-6 md:py-12'>
-          <CategoryGrid onSelect={setActiveList} />
+        <section className='pb-4 pt-6 md:pb-8 md:pt-10'>
+          <SearchSection />
         </section>
 
-        <div className='flex flex-col gap-4 pb-12 pt-6 md:gap-8 md:pb-25 md:pt-0'>
-          <div className='flex flex-row justify-between'>
-            <h2 className='text-xl font-semibold leading-9 text-neutral-900 md:text-[32px] md:leading-10.5'>
+        <section className='py-4 md:py-8'>
+          <CategoryGrid onSelect={handleCategorySelect} />
+        </section>
+
+        <div className='flex flex-col gap-4 pb-12 pt-6 md:gap-8 md:pb-20 md:pt-0'>
+          <div className='flex flex-row items-center justify-between'>
+            <h2 className='text-xl font-bold tracking-tight text-neutral-900 md:text-3xl'>
               {titleText}
             </h2>
+
             <button
-              className='cursor-pointer text-[15px] font-extrabold leading-normal text-primary-100 md:text-lg md:leading-8'
+              type='button'
+              className='cursor-pointer text-sm font-extrabold text-primary-100 outline-none transition-colors hover:text-primary-200 focus-visible:underline md:text-base'
               onClick={() => navigate('/category')}
             >
               See All
             </button>
           </div>
 
-          <div className='flex flex-col gap-4 md:grid md:grid-cols-3 md:gap-x-5 md:gap-y-5'>
+          <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-6'>
             <RestaurantList
-              activeList={activeList}
+              activeList={resolvedActiveList}
               titleText={titleText}
               isLoading={isLoading}
               isError={isError}
@@ -110,13 +135,13 @@ export default function HomePage() {
           </div>
 
           <LoadMoreButton
-            activeList={activeList}
+            activeList={resolvedActiveList}
             hasNextPage={paginatedQuery?.hasNextPage ?? false}
             isFetchingNextPage={paginatedQuery?.isFetchingNextPage ?? false}
             onLoadMore={() => paginatedQuery?.fetchNextPage()}
           />
         </div>
       </main>
-    </>
+    </div>
   );
 }
