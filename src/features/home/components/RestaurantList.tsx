@@ -2,9 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import RestaurantCard from './RestaurantCard';
 import { COMING_SOON_LISTS } from '../types';
 import type { ActiveList, RecommendedItem } from '../types';
+import RestaurantCard from './RestaurantCard';
 
 interface RestaurantListProps {
   activeList: ActiveList;
@@ -16,7 +16,6 @@ interface RestaurantListProps {
   items: RecommendedItem[];
 }
 
-// Renders skeleton, error, coming soon, or restaurant card list based on active state.
 export default function RestaurantList({
   activeList,
   titleText,
@@ -31,11 +30,13 @@ export default function RestaurantList({
 
   if (isComingSoon) {
     return (
-      <div className='md:col-span-3'>
-        <Alert>
-          <AlertTitle>Coming Soon</AlertTitle>
-          <AlertDescription>
-            We're currently developing the {titleText} feature. Stay tuned!
+      <div className='col-span-full select-none animate-fadeIn'>
+        <Alert className='rounded-3xl border border-neutral-100 p-6 bg-zinc-50/50'>
+          <AlertTitle className='text-base font-bold tracking-tight text-neutral-900'>
+            Coming Soon
+          </AlertTitle>
+          <AlertDescription className='text-sm text-neutral-500 mt-1 font-medium'>
+            We&apos;re currently developing the {titleText} feature. Stay tuned!
           </AlertDescription>
         </Alert>
       </div>
@@ -45,27 +46,29 @@ export default function RestaurantList({
   if (isLoading) {
     return (
       <>
-        <div className='flex items-center justify-between rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-[0_4px_12px_rgba(0,0,0,0.06)] md:col-span-3'>
+        {/* Dynamic Status Loading Tracker */}
+        <div className='flex items-center justify-between rounded-2xl border border-neutral-200 bg-white px-4 py-3.5 shadow-sm col-span-full select-none animate-pulse'>
           <div className='flex items-center gap-3'>
-            <div className='h-2.5 w-2.5 animate-pulse rounded-full bg-primary-100' />
-            <span className='text-sm font-semibold text-neutral-700'>
+            <div className='h-2 w-2 rounded-full bg-primary-100' />
+            <span className='text-sm font-bold tracking-tight text-neutral-800'>
               Loading data
             </span>
           </div>
-          <span className='text-xs text-neutral-500'>
+          <span className='hidden text-xs font-semibold text-neutral-400 sm:block'>
             Please wait a moment.
           </span>
         </div>
-        {Array.from({ length: 3 }).map((_, i) => (
+
+        {Array.from({ length: 4 }).map((_, index) => (
           <div
-            key={i}
-            className='flex flex-row gap-3 rounded-3xl px-3 py-3 shadow-[0_4px_12px_rgba(0,0,0,0.06)] md:px-4 md:py-4'
+            key={`restaurant-skeleton-${index}`}
+            className='flex flex-col overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm'
           >
-            <Skeleton className='h-22.5 w-22.5 rounded-2xl md:h-30 md:w-30' />
-            <div className='flex w-full flex-col gap-2'>
-              <Skeleton className='h-5 w-3/4' />
-              <Skeleton className='h-4 w-1/3' />
-              <Skeleton className='h-4 w-2/3' />
+            <Skeleton className='h-48 w-full rounded-none sm:h-52' />
+            <div className='flex flex-col gap-3.5 p-5'>
+              <Skeleton className='h-5 w-3/4 rounded-md' />
+              <Skeleton className='h-4 w-1/3 rounded-md' />
+              <Skeleton className='h-4 w-2/3 rounded-md' />
             </div>
           </div>
         ))}
@@ -75,15 +78,21 @@ export default function RestaurantList({
 
   if (isError) {
     return (
-      <div className='md:col-span-3'>
-        <Alert variant='destructive'>
-          <AlertTitle>Failed to load data.</AlertTitle>
-          <AlertDescription>{errorMessage}</AlertDescription>
+      <div className='col-span-full select-none'>
+        <Alert variant='destructive' className='rounded-3xl p-6'>
+          <AlertTitle className='text-base font-bold tracking-tight'>
+            Failed to load data.
+          </AlertTitle>
+          <AlertDescription className='text-sm font-medium mt-1 opacity-90'>
+            {errorMessage}
+          </AlertDescription>
+
           {shouldLogin && (
-            <div className='pt-3'>
+            <div className='pt-4'>
               <Button
+                type='button'
                 onClick={() => navigate('/auth', { state: { tab: 'signin' } })}
-                className='h-10 w-40 cursor-pointer rounded-[100px] bg-primary-100 p-2 text-[14px] font-bold leading-7 text-white -tracking-[0.02em] md:h-11 md:w-60'
+                className='h-11 w-full sm:w-60 cursor-pointer rounded-full bg-white font-bold text-red-600 shadow-sm border border-red-200 transition-colors hover:bg-red-50 text-sm outline-none focus-visible:ring-2 focus-visible:ring-red-400'
               >
                 Login to view data
               </Button>
@@ -96,10 +105,12 @@ export default function RestaurantList({
 
   if (items.length === 0) {
     return (
-      <div className='md:col-span-3'>
-        <Alert>
-          <AlertTitle>No restaurants found</AlertTitle>
-          <AlertDescription>
+      <div className='col-span-full select-none'>
+        <Alert className='rounded-3xl border border-neutral-100 p-6 bg-zinc-50/50'>
+          <AlertTitle className='text-base font-bold tracking-tight text-neutral-900'>
+            No restaurants found
+          </AlertTitle>
+          <AlertDescription className='text-sm text-neutral-500 mt-1 font-medium'>
             Try a different category or search keyword.
           </AlertDescription>
         </Alert>
@@ -111,7 +122,7 @@ export default function RestaurantList({
     <>
       {items.map((item) => (
         <RestaurantCard
-          key={item.id}
+          key={`restaurant-item-${item.id}`}
           item={item}
           onClick={() => navigate(`/details/${item.id}`)}
         />
