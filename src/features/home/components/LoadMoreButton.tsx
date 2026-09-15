@@ -7,38 +7,46 @@ interface LoadMoreButtonProps {
   onLoadMore: () => void;
 }
 
-const PAGINATED_LISTS: ActiveList[] = [
+const PAGINATED_LISTS = [
   'best-seller',
   'all-restaurants',
   'nearby',
-];
+] as const satisfies readonly ActiveList[];
 
-// "Show more" / "No more data" button for paginated lists.
 export default function LoadMoreButton({
   activeList,
   hasNextPage,
   isFetchingNextPage,
   onLoadMore,
 }: LoadMoreButtonProps) {
-  const isPaginated = PAGINATED_LISTS.includes(activeList);
-  const isDisabled = !isPaginated || !hasNextPage;
+  const isPaginated = PAGINATED_LISTS.includes(
+    activeList as (typeof PAGINATED_LISTS)[number],
+  );
 
-  const label = isDisabled
-    ? 'No more data'
-    : isFetchingNextPage
-      ? 'Loading...'
-      : 'Show More';
+  if (!isPaginated) {
+    return null;
+  }
+
+  if (!hasNextPage && !isFetchingNextPage) {
+    return (
+      <div className='flex w-full items-center justify-center py-6'>
+        <p className='text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400'>
+          You&apos;ve reached the end of the list
+        </p>
+      </div>
+    );
+  }
+
+  const label = isFetchingNextPage ? 'Loading...' : 'Show more';
 
   return (
-    <div className='flex w-full flex-1 flex-row items-center justify-center'>
+    <div className='flex w-full items-center justify-center pb-12 pt-8'>
       <button
-        disabled={isDisabled}
+        type='button'
+        disabled={isFetchingNextPage}
+        aria-busy={isFetchingNextPage}
         onClick={onLoadMore}
-        className={`h-10 w-40 cursor-pointer rounded-[100px] text-[14px] font-bold leading-7 ring-1 ring-inset ring-neutral-300 -tracking-[0.02em] ${
-          isDisabled
-            ? 'cursor-not-allowed text-neutral-400'
-            : 'text-neutral-950'
-        }`}
+        className='h-11 min-w-[160px] rounded-full bg-white px-6 text-sm font-bold tracking-tight text-neutral-900 ring-1 ring-inset ring-neutral-300 outline-none transition-all focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-offset-2 enabled:cursor-pointer enabled:hover:bg-neutral-50 enabled:active:scale-95 disabled:cursor-not-allowed disabled:bg-neutral-50 disabled:text-neutral-400'
       >
         {label}
       </button>
