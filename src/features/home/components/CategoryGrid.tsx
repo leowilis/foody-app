@@ -76,7 +76,7 @@ export default function CategoryGrid({ onSelect }: CategoryGridProps) {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             aria-label={`Explore ${category.label} category`}
-            className='flex shrink-0 flex-col items-center gap-3 rounded-2xl border border-neutral-200 bg-white px-4 py-5 text-center transition-all duration-300 outline-none hover:border-neutral-300 hover:shadow-[0_12px_32px_rgba(0,0,0,0.04)] focus-visible:ring-2 focus-visible:ring-primary-100 active:translate-y-0 lg:w-full lg:mr-0'
+            className='flex shrink-0 flex-col items-center gap-3 rounded-2xl border border-neutral-200 bg-white px-3 py-4 text-center transition-all duration-300 outline-none hover:border-neutral-300 hover:shadow-[0_12px_32px_rgba(0,0,0,0.04)] focus-visible:ring-2 focus-visible:ring-primary-100 active:translate-y-0 lg:w-full lg:mr-0'
             style={{
               transformStyle: 'preserve-3d',
               minWidth: `${CATEGORY_CONFIG.CARD_MIN_WIDTH_MOBILE}px`,

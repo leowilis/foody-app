@@ -11,9 +11,7 @@ interface HeroSectionProps {
 
 export default function HeroSection({ slides }: HeroSectionProps) {
   const handleExplore = () => {
-    const target = document.getElementById('restaurant-discovery');
-
-    target?.scrollIntoView({
+    document.getElementById('restaurant-discovery')?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
     });
@@ -22,31 +20,44 @@ export default function HeroSection({ slides }: HeroSectionProps) {
   return (
     <section
       aria-labelledby='hero-title'
-      className='relative overflow-hidden bg-white'
+      className='relative overflow-hidden bg-[#fffaf6]'
     >
-      <PageContainer className='flex min-h-[620px] items-center py-10 sm:py-14 lg:min-h-[560px] lg:py-16'>
-        <div className='grid w-full items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14'>
+      {/* Decorative background shapes */}
+      <div
+        aria-hidden='true'
+        className='pointer-events-none absolute -left-40 bottom-0 h-80 w-80 rounded-full bg-primary-100/10 blur-3xl'
+      />
+
+      <div
+        aria-hidden='true'
+        className='pointer-events-none absolute -right-32 top-20 h-[420px] w-[420px] rounded-full bg-orange-100/40 blur-3xl'
+      />
+
+      <PageContainer className='relative z-10 flex min-h-[620px] items-center py-14 sm:py-16 lg:min-h-[620px] lg:py-20'>
+        <div className='grid w-full items-center gap-12 lg:grid-cols-[0.88fr_1.12fr] lg:gap-10 xl:grid-cols-[0.9fr_1.1fr] xl:gap-16'>
           <HeroContent onExplore={handleExplore} />
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{
+              opacity: 0,
+              scale: 0.96,
+              x: 20,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              x: 0,
+            }}
             transition={{
               duration: HERO_CONFIG.animation.duration,
               delay: HERO_CONFIG.animation.stagger,
-              ease: [0.22, 1, 0.36, 1],
+              ease: HERO_CONFIG.animation.ease,
             }}
           >
             <HeroVisual slides={slides} />
           </motion.div>
         </div>
       </PageContainer>
-
-      {/* Decorative background element */}
-      <div
-        aria-hidden='true'
-        className='pointer-events-none absolute -right-40 top-20 -z-0 h-80 w-80 rounded-full bg-primary-100/5 blur-3xl'
-      />
     </section>
   );
 }
