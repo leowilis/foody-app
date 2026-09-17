@@ -9,6 +9,7 @@ interface CategoryGridProps {
   onSelect: (list: ActiveList) => void;
 }
 
+// Displays food categories with a subtle 3D hover effect.
 export default function CategoryGrid({ onSelect }: CategoryGridProps) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -20,54 +21,62 @@ export default function CategoryGrid({ onSelect }: CategoryGridProps) {
       navigate('/category');
       return;
     }
+
     onSelect(key);
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const card = e.currentTarget;
+  const handleMouseMove = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const card = event.currentTarget;
     const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const xc = rect.width / 2;
-    const yc = rect.height / 2;
-
-    // The 3D Tilt Effect logic uses values from the constants file
-    const tiltX = (yc - y) / CATEGORY_CONFIG.TILT_DIVIDER_X;
-    const tiltY = (x - xc) / CATEGORY_CONFIG.TILT_DIVIDER_Y;
-    card.style.transform = `perspective(${CATEGORY_CONFIG.PERSPECTIVE_PX}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(${CATEGORY_CONFIG.HOVER_SCALE})`;
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (centerY - y) / CATEGORY_CONFIG.TILT_DIVIDER_X;
+    const rotateY = (x - centerX) / CATEGORY_CONFIG.TILT_DIVIDER_Y;
+    card.style.transform = `
+      perspective(${CATEGORY_CONFIG.PERSPECTIVE_PX}px)
+      rotateX(${rotateX}deg)
+      rotateY(${rotateY}deg)
+      scale(${CATEGORY_CONFIG.HOVER_SCALE})
+    `;
   };
 
-  const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const card = e.currentTarget;
-    card.style.transform = `perspective(${CATEGORY_CONFIG.PERSPECTIVE_PX}px) rotateX(0deg) rotateY(0deg) scale(1)`;
+  const handleMouseLeave = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.currentTarget.style.transform = `
+      perspective(${CATEGORY_CONFIG.PERSPECTIVE_PX}px)
+      rotateX(0deg)
+      rotateY(0deg)
+      scale(1)
+    `;
   };
 
   return (
-    <section
-      aria-labelledby='category-heading'
-      className='space-y-5 select-none'
-    >
-      <div className='flex items-end justify-between'>
+    <section aria-labelledby='category-heading' className='select-none'>
+      <div className='mb-6 flex items-end justify-between'>
         <div>
-          <p className='text-xs font-black uppercase tracking-[0.18em] text-primary-100'>
+          <p className='text-[11px] font-extrabold uppercase tracking-[0.24em] text-primary-100'>
             Explore
           </p>
+
           <h2
             id='category-heading'
-            className='mt-1 text-2xl font-black tracking-tight text-neutral-950 sm:text-3xl'
+            className='mt-2 text-2xl font-black tracking-[-0.035em] text-neutral-950 sm:text-3xl'
           >
-            Find what you’re craving
+            Find what you&apos;re craving
           </h2>
         </div>
+
+        <button
+          type='button'
+          onClick={() => navigate('/category')}
+          className='hidden cursor-pointer text-sm font-bold text-neutral-500 outline-none transition-colors duration-200 hover:text-primary-100 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-offset-2 sm:block'
+        >
+          View all
+        </button>
       </div>
 
-      {/* Grid Container */}
-      <div
-        className='flex w-full overflow-x-auto overflow-y-visible pt-2 pb-4 scrollbar-none lg:grid lg:grid-cols-6 lg:overflow-visible lg:pt-1 lg:pb-1'
-        style={{
-          gap: `${CATEGORY_CONFIG.CONTAINER_GAP}px`,
-        }}
-      >
+      <div className='flex w-full gap-3 overflow-x-auto overflow-y-visible px-1 pb-4 pt-2 scrollbar-none sm:gap-4 lg:grid lg:grid-cols-6 lg:overflow-visible lg:px-0 lg:pb-1 lg:pt-1'>
         {CATEGORIES.map((category) => (
           <button
             key={category.key}
@@ -76,15 +85,14 @@ export default function CategoryGrid({ onSelect }: CategoryGridProps) {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             aria-label={`Explore ${category.label} category`}
-            className='flex shrink-0 flex-col items-center gap-3 rounded-2xl border border-neutral-200 bg-white px-3 py-4 text-center transition-all duration-300 outline-none hover:border-neutral-300 hover:shadow-[0_12px_32px_rgba(0,0,0,0.04)] focus-visible:ring-2 focus-visible:ring-primary-100 active:translate-y-0 lg:w-full lg:mr-0'
+            className='group flex shrink-0 cursor-pointer flex-col items-center rounded-[24px] border border-neutral-200/80 bg-white px-4 py-5 text-center shadow-[0_6px_24px_rgba(0,0,0,0.04)] outline-none transition-[transform,box-shadow,border-color] duration-300 ease-out will-change-transform hover:border-neutral-300 hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-offset-2 lg:w-full'
             style={{
-              transformStyle: 'preserve-3d',
               minWidth: `${CATEGORY_CONFIG.CARD_MIN_WIDTH_MOBILE}px`,
+              transformStyle: 'preserve-3d',
             }}
           >
-            {/* Category icon */}
             <span
-              className='flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-50 transition-colors duration-300'
+              className='flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fff5ef] transition-transform duration-300 ease-out group-hover:scale-105'
               style={{
                 transform: `translateZ(${CATEGORY_CONFIG.ICON_Z_OFFSET_PX}px)`,
               }}
@@ -97,9 +105,8 @@ export default function CategoryGrid({ onSelect }: CategoryGridProps) {
               />
             </span>
 
-            {/* Category label */}
             <span
-              className='text-sm font-bold text-neutral-800 tracking-tight'
+              className='mt-3 text-sm font-bold tracking-tight text-neutral-900'
               style={{
                 transform: `translateZ(${CATEGORY_CONFIG.LABEL_Z_OFFSET_PX}px)`,
               }}
@@ -109,6 +116,14 @@ export default function CategoryGrid({ onSelect }: CategoryGridProps) {
           </button>
         ))}
       </div>
+
+      <button
+        type='button'
+        onClick={() => navigate('/category')}
+        className='mt-1 block cursor-pointer text-sm font-bold text-neutral-500 outline-none transition-colors duration-200 hover:text-primary-100 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-offset-2 sm:hidden'
+      >
+        View all categories
+      </button>
     </section>
   );
 }
