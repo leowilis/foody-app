@@ -32,19 +32,19 @@ export default function CategoryGrid({ onSelect }: CategoryGridProps) {
     const y = event.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const rotateX = (centerY - y) / CATEGORY_CONFIG.TILT_DIVIDER_X;
-    const rotateY = (x - centerX) / CATEGORY_CONFIG.TILT_DIVIDER_Y;
+    const rotateX = (centerY - y) / CATEGORY_CONFIG.tilt.dividerX;
+    const rotateY = (x - centerX) / CATEGORY_CONFIG.tilt.dividerY;
     card.style.transform = `
-      perspective(${CATEGORY_CONFIG.PERSPECTIVE_PX}px)
+      perspective(${CATEGORY_CONFIG.tilt.perspective}px)
       rotateX(${rotateX}deg)
       rotateY(${rotateY}deg)
-      scale(${CATEGORY_CONFIG.HOVER_SCALE})
+      scale(${CATEGORY_CONFIG.tilt.scale})
     `;
   };
 
   const handleMouseLeave = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.currentTarget.style.transform = `
-      perspective(${CATEGORY_CONFIG.PERSPECTIVE_PX}px)
+      perspective(${CATEGORY_CONFIG.tilt.perspective}px)
       rotateX(0deg)
       rotateY(0deg)
       scale(1)
@@ -87,14 +87,14 @@ export default function CategoryGrid({ onSelect }: CategoryGridProps) {
             aria-label={`Explore ${category.label} category`}
             className='group flex shrink-0 cursor-pointer flex-col items-center rounded-[24px] border border-neutral-200/80 bg-white px-4 py-5 text-center shadow-[0_6px_24px_rgba(0,0,0,0.04)] outline-none transition-[transform,box-shadow,border-color] duration-300 ease-out will-change-transform hover:border-neutral-300 hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-offset-2 lg:w-full'
             style={{
-              minWidth: `${CATEGORY_CONFIG.CARD_MIN_WIDTH_MOBILE}px`,
+              minWidth: `${CATEGORY_CONFIG.card.minWidthMobile}px`,
               transformStyle: 'preserve-3d',
             }}
           >
             <span
               className='flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fff5ef] transition-transform duration-300 ease-out group-hover:scale-105'
               style={{
-                transform: `translateZ(${CATEGORY_CONFIG.ICON_Z_OFFSET_PX}px)`,
+                transform: `translateZ(${CATEGORY_CONFIG.depth.icon}px)`,
               }}
             >
               <img
@@ -108,7 +108,7 @@ export default function CategoryGrid({ onSelect }: CategoryGridProps) {
             <span
               className='mt-3 text-sm font-bold tracking-tight text-neutral-900'
               style={{
-                transform: `translateZ(${CATEGORY_CONFIG.LABEL_Z_OFFSET_PX}px)`,
+                transform: `translateZ(${CATEGORY_CONFIG.depth.label}px)`,
               }}
             >
               {category.label}
