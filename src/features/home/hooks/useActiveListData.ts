@@ -1,7 +1,10 @@
 import { getErrorMessage, isUnauthorizedError } from '@/lib/api-helpers';
+
 import type { ActiveList, RecommendedItem } from '../types';
+
 import { useHomeQueries } from './useHomeQueries';
 
+// Selects the active restaurant data and query state.
 export function useActiveListData(activeList: ActiveList, keyword: string) {
   const {
     recommendedQuery,
@@ -26,6 +29,9 @@ export function useActiveListData(activeList: ActiveList, keyword: string) {
   const items: RecommendedItem[] = (() => {
     switch (activeList) {
       case 'recommended':
+      case 'discount':
+      case 'delivery':
+      case 'lunch':
         return recommendedQuery.data?.data?.recommendations ?? [];
 
       case 'best-seller':
@@ -51,11 +57,6 @@ export function useActiveListData(activeList: ActiveList, keyword: string) {
 
       case 'search':
         return searchQuery.data?.data?.restaurants ?? [];
-
-      case 'discount':
-      case 'delivery':
-      case 'lunch':
-        return recommendedQuery.data?.data?.recommendations ?? [];
 
       default:
         return [];
