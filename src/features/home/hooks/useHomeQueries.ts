@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api';
 import { SEARCH_CONFIG } from '@/features/search/search.constants';
+import { api } from '@/lib/api';
 import type { ActiveList, RecommendedResponse } from '../types';
 import { useDebouncedValue } from './useDebouncedValue';
 
@@ -11,7 +11,7 @@ const RECOMMENDED_STALE_TIME = 5 * 60 * 1000;
 const getNextPageParam = (
   lastPage: RecommendedResponse,
   allPages: RecommendedResponse[],
-) => {
+): number | undefined => {
   const pagination = lastPage.data?.pagination;
 
   if (pagination?.page !== undefined && pagination?.totalPages !== undefined) {
@@ -23,6 +23,7 @@ const getNextPageParam = (
   return restaurantCount < LIST_LIMIT ? undefined : allPages.length + 1;
 };
 
+// Provides restaurant queries for the home page.
 export function useHomeQueries(activeList: ActiveList, keyword: string) {
   const debouncedKeyword = useDebouncedValue(
     keyword,
