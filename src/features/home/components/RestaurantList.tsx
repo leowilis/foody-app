@@ -1,14 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
   COMING_SOON_LISTS,
   type ActiveList,
   type RecommendedItem,
 } from '../types';
-
 import RestaurantCard from './RestaurantCard';
+import RestaurantCardSkeleton from './RestaurantCardSkeleton';
 
 interface RestaurantListProps {
   activeList: ActiveList;
@@ -70,18 +69,7 @@ export default function RestaurantList({
         </div>
 
         {Array.from({ length: 4 }).map((_, index) => (
-          <div
-            key={`restaurant-skeleton-${index}`}
-            className='flex flex-col w-full overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm'
-          >
-            <Skeleton className='aspect-[4/3] w-full rounded-none' />
-
-            <div className='flex flex-col gap-3.5 p-5'>
-              <Skeleton className='h-5 w-3/4 rounded-md' />
-              <Skeleton className='h-4 w-1/3 rounded-md' />
-              <Skeleton className='h-4 w-2/3 rounded-md' />
-            </div>
-          </div>
+          <RestaurantCardSkeleton key={`restaurant-skeleton-${index}`} />
         ))}
       </>
     );
