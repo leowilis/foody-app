@@ -1,5 +1,5 @@
 import StarRating from '@/components/ui/starRating';
-import type { ReviewItem } from '../type';
+import type { ReviewItem } from '../schemas/restaurantSchema';
 import ReviewCard from './ReviewCard';
 
 interface ReviewSectionProps {
@@ -11,7 +11,10 @@ interface ReviewSectionProps {
   onShowMore: () => void;
 }
 
-// Review list with average rating summary and show more button.
+/**
+ * Displays the restaurant review section with an average rating summary,
+ * review cards, and pagination controls for loading additional reviews.
+ */
 export default function ReviewSection({
   reviews,
   averageRating,
@@ -20,14 +23,26 @@ export default function ReviewSection({
   isFetching,
   onShowMore,
 }: ReviewSectionProps) {
+  const isShowMoreDisabled = !hasMore || isFetching;
+
   return (
-    <section className='flex flex-col gap-4'>
-      <h2 className='text-[24px] font-extrabold leading-9 md:text-[36px] md:leading-11'>
+    <section
+      aria-labelledby='restaurant-reviews-title'
+      className='flex flex-col gap-4'
+    >
+      <h2
+        id='restaurant-reviews-title'
+        className='text-[24px] font-extrabold leading-9 md:text-[36px] md:leading-11'
+      >
         Review
       </h2>
 
-      <div className='flex items-center gap-1'>
+      <div
+        className='flex items-center gap-1'
+        aria-label={`${averageRating} out of 5 stars from ${totalReviews} reviews`}
+      >
         <StarRating rating={averageRating} />
+
         <span className='text-[14px] text-neutral-500 md:text-[16px]'>
           ({totalReviews} reviews)
         </span>
@@ -41,12 +56,13 @@ export default function ReviewSection({
 
       <div className='mb-13 flex w-full items-center justify-center pb-4 md:pb-0'>
         <button
-          disabled={!hasMore || isFetching}
+          type='button'
+          disabled={isShowMoreDisabled}
           onClick={onShowMore}
           className={`h-10 w-40 rounded-[100px] text-[14px] font-bold leading-7 ring-1 ring-inset ring-neutral-300 -tracking-[0.02em] ${
-            !hasMore || isFetching
+            isShowMoreDisabled
               ? 'cursor-not-allowed text-neutral-400'
-              : 'cursor-pointer text-neutral-950'
+              : 'cursor-pointer text-neutral-950 transition-colors hover:bg-neutral-100'
           }`}
         >
           {!hasMore ? 'No More Data' : isFetching ? 'Loading...' : 'Show More'}
