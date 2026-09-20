@@ -30,6 +30,7 @@ export default function ReviewSection({
       aria-labelledby='restaurant-reviews-title'
       className='flex flex-col gap-4'
     >
+      {/* Review section */}
       <h2
         id='restaurant-reviews-title'
         className='text-[24px] font-extrabold leading-9 md:text-[36px] md:leading-11'
@@ -37,6 +38,7 @@ export default function ReviewSection({
         Review
       </h2>
 
+      {/* Average rating and total review count */}
       <div
         className='flex items-center gap-1'
         aria-label={`${averageRating} out of 5 stars from ${totalReviews} reviews`}
@@ -48,6 +50,7 @@ export default function ReviewSection({
         </span>
       </div>
 
+      {/* Customer review cards */}
       <div className='flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-x-5 md:gap-y-5'>
         {reviews.map((review) => (
           <ReviewCard key={review.id} review={review} />
@@ -55,6 +58,7 @@ export default function ReviewSection({
       </div>
 
       <div className='mb-13 flex w-full items-center justify-center pb-4 md:pb-0'>
+        {/* Load more reviews button */}
         <button
           type='button'
           disabled={isShowMoreDisabled}
