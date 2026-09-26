@@ -1,5 +1,4 @@
 import { formatRupiah } from '@/lib/format';
-
 import type { CartGroupItem } from '../types';
 
 interface CartItemRowProps {
@@ -10,7 +9,7 @@ interface CartItemRowProps {
   isDeleting: boolean;
 }
 
-// Displays a cart item with product information and quantity controls.
+// Displays a single cart item with its product information and quantity controls.
 export default function CartItemRow({
   item,
   onIncrease,
@@ -18,17 +17,20 @@ export default function CartItemRow({
   isUpdating,
   isDeleting,
 }: CartItemRowProps) {
-  const image = item.menu.image || '/images/common/details-dummy-1.svg';
+  const isPending = isUpdating || isDeleting;
+  const quantityLabel = `Quantity of ${item.menu.foodName}`;
 
   return (
-    <div className='flex flex-row items-center justify-between border-b border-neutral-100 py-2 last:border-0'>
+    <div className='flex items-center justify-between border-b border-neutral-100 py-2 last:border-0'>
       {/* Product information */}
-      <div className='flex min-w-0 flex-row items-center gap-4'>
-        <img
-          src={image}
-          alt={item.menu.foodName}
-          loading='lazy'
-          className='h-16 w-16 shrink-0 rounded-2xl object-cover md:h-20 md:w-20'
+      <div className='flex min-w-0 items-center gap-4'>
+        <div
+          role='img'
+          aria-label={item.menu.foodName}
+          className='h-16 w-16 shrink-0 rounded-2xl bg-cover bg-center bg-no-repeat md:h-20 md:w-20'
+          style={{
+            backgroundImage: `url('${item.menu.image}')`,
+          }}
         />
 
         <div className='flex min-w-0 flex-col justify-center'>
@@ -43,12 +45,15 @@ export default function CartItemRow({
       </div>
 
       {/* Quantity controls */}
-      <div className='flex shrink-0 flex-row items-center gap-4'>
+      <div
+        className='ml-4 flex shrink-0 items-center gap-4'
+        aria-label={quantityLabel}
+      >
         <button
           type='button'
-          aria-label={`Decrease quantity of ${item.menu.foodName}`}
+          aria-label={`Decrease ${quantityLabel}`}
           onClick={onDecrease}
-          disabled={isUpdating || isDeleting}
+          disabled={isPending}
           className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full ring-1 ring-inset ring-neutral-300 disabled:cursor-not-allowed disabled:opacity-50 md:h-10 md:w-10'
         >
           <img
@@ -68,9 +73,9 @@ export default function CartItemRow({
 
         <button
           type='button'
-          aria-label={`Increase quantity of ${item.menu.foodName}`}
+          aria-label={`Increase ${quantityLabel}`}
           onClick={onIncrease}
-          disabled={isUpdating}
+          disabled={isPending}
           className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-primary-100 hover:bg-primary-200 disabled:cursor-not-allowed disabled:opacity-50 md:h-10 md:w-10'
         >
           <img

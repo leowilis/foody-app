@@ -4,13 +4,16 @@ import { formatRupiah } from '@/lib/format';
 import type { CartMutations, CartRestaurant } from '../types';
 import CartItemRow from './CartItemRow';
 
-interface CartGroupProps {
+interface CartGroupItemProps {
   group: CartRestaurant;
   mutations: CartMutations;
 }
 
-// Displays a restaurant's cart items with subtotal and checkout action.
-export default function CartGroup({ group, mutations }: CartGroupProps) {
+// Displays a restaurant's cart items, subtotal, and checkout action.
+export default function CartGroupItem({
+  group,
+  mutations,
+}: CartGroupItemProps) {
   const navigate = useNavigate();
   const { updateMutation, deleteMutation, handleIncrease, handleDecrease } =
     mutations;
@@ -35,7 +38,7 @@ export default function CartGroup({ group, mutations }: CartGroupProps) {
       {/* Restaurant navigation */}
       <Link
         to={restaurantDetailsPath}
-        className='flex w-fit cursor-pointer flex-row items-center gap-1 outline-none md:gap-2'
+        className='flex w-fit flex-row items-center gap-1 outline-none md:gap-2'
       >
         <img
           src={
@@ -72,6 +75,7 @@ export default function CartGroup({ group, mutations }: CartGroupProps) {
 
       {/* Cart subtotal */}
       <hr className='border-t border-dashed border-neutral-300' />
+
       <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
         <div className='flex flex-col'>
           <span className='-mb-1 text-sm font-medium leading-7 -tracking-[0.03em] md:text-base md:leading-7.5'>
@@ -87,7 +91,7 @@ export default function CartGroup({ group, mutations }: CartGroupProps) {
         <Button
           type='button'
           onClick={handleCheckout}
-          className='h-11 w-full cursor-pointer rounded-[100px] bg-primary-100 text-[14px] font-bold leading-7 text-white -tracking-[0.02em] md:h-12 md:w-60 md:text-[16px] md:leading-7.5'
+          className='h-11 w-full rounded-[100px] bg-primary-100 text-[14px] font-bold leading-7 text-white -tracking-[0.02em] md:h-12 md:w-60 md:text-[16px] md:leading-7.5'
         >
           Checkout
         </Button>

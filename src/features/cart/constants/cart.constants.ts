@@ -11,8 +11,3 @@ export const CART_MESSAGES = {
   DELETE_SUCCESS: 'Item removed from cart',
   DELETE_ERROR: 'Failed to remove item',
 } as const;
-
-export const CART_SKELETON = {
-  GROUP_COUNT: 2,
-  ITEMS_PER_GROUP: 2,
-} as const;

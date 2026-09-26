@@ -31,9 +31,9 @@ export function useCartHandlers({ mutations }: UseCartHandlersProps) {
   const { updateMutation, deleteMutation } = mutations;
   const isItemPending = useCallback(
     (cartItemId: number) =>
-      updateMutation.isPending &&
-      cartItems.some((item) => item.cartItemId === cartItemId),
-    [cartItems, updateMutation.isPending],
+      cartItems.some((item) => item.cartItemId === cartItemId) &&
+      (updateMutation.isPending || deleteMutation.isPending),
+    [cartItems, updateMutation.isPending, deleteMutation.isPending],
   );
 
   const handleIncrease = useCallback(
