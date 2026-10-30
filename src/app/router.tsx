@@ -11,6 +11,7 @@ import {
   CheckoutPage,
   SuccessPage,
   MyCartPage,
+  FavoritesPage,
 } from './lazyRoutes';
 
 export const router = createBrowserRouter([
@@ -31,6 +32,14 @@ export const router = createBrowserRouter([
             element: (
               <LazyWrapper>
                 <MyCartPage />
+              </LazyWrapper>
+            ),
+          },
+          {
+            path: 'favorites',
+            element: (
+              <LazyWrapper>
+                <FavoritesPage />
               </LazyWrapper>
             ),
           },

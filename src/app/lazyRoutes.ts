@@ -10,4 +10,9 @@ export const CheckoutPage = lazy(
 export const SuccessPage = lazy(
   () => import('@/features/checkout/SuccessPage'),
 );
+
+export const FavoritesPage = lazy(
+  () => import('@/features/favorites/FavoritesPage'),
+);
+
 export const MyCartPage = lazy(() => import('@/features/cart/MyCartPage'));

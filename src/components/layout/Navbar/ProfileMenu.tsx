@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Heart } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -80,13 +81,15 @@ export default function ProfileMenu({
         {/* Dropdown Options List */}
         <div className='flex flex-col gap-0 pt-3'>
           <DropdownMenuItem
-            className='cursor-pointer gap-3 rounded-xl px-2 py-2 hover:bg-neutral-50 outline-none'
-            onClick={() => navigate('/profile')}
+            className='cursor-pointer gap-3 rounded-xl px-2 py-2 outline-none hover:bg-surface-subtle focus:bg-surface-subtle'
+            onClick={() => navigate('/favorites')}
           >
-            <SlLocationPin className='text-xl text-neutral-500 shrink-0' />
-            <span className='text-sm font-medium text-neutral-700'>
-              Delivery Address
-            </span>
+            <Heart
+              aria-hidden='true'
+              className='h-5 w-5 shrink-0 text-text-secondary'
+            />
+
+            <span className='text-sm font-medium text-text'>Favorites</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem

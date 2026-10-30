@@ -1,3 +1,5 @@
+import { Share2 } from 'lucide-react';
+import FavoriteButton from '@/features/favorites/components/FavoriteButton';
 import StarRating from '@/components/ui/starRating';
 import type { RestaurantDetail } from '../type';
 
@@ -36,14 +38,18 @@ export default function RestaurantInfo({
         </div>
       </div>
 
-      <button
-        onClick={onShare}
-        className='flex h-fit w-fit cursor-pointer flex-row items-center justify-center gap-3 rounded-[100px] p-3 ring-1 ring-inset ring-neutral-300 transition-transform duration-200 hover:scale-[1.05] md:h-11 md:w-35 md:px-4 md:py-3'
-        aria-label='Share restaurant'
-      >
-        <img src='/images/common/share.svg' alt='' className='h-5 w-5' />
-        <span className='hidden text-neutral-950 md:block'>Share</span>
-      </button>
+      <div className='flex shrink-0 items-center gap-2'>
+        <FavoriteButton restaurantId={detail.id} restaurantName={detail.name} />
+
+        <button
+          type='button'
+          onClick={onShare}
+          aria-label={`Share ${detail.name}`}
+          className='inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface-subtle text-white transition-colors hover:border-primary-100 hover:bg-primary-100/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-100'
+        >
+          <Share2 aria-hidden='true' className='h-5 w-5' />
+        </button>
+      </div>
     </div>
   );
 }
