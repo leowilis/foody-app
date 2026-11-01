@@ -17,15 +17,5 @@ export const store = configureStore({
   },
 });
 
-// Persist cart to localStorage after every action
-store.subscribe(() => {
-  const { cart } = store.getState()
-  try {
-    localStorage.setItem('cart_state', JSON.stringify({ items: cart.items }))
-  } catch {
-    // ignore storage errors
-  }
-})
-
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

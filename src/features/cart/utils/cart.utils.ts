@@ -1,4 +1,4 @@
-import type { CartResponse } from '../types';
+import type { CartRestaurant, CartResponse, CartGroupItem } from '../types';
 
 interface UpdateCartCacheParams {
   cartItemId: number;
@@ -9,12 +9,41 @@ interface RemoveCartCacheParams {
   cartItemId: number;
 }
 
-/**
- * Updates a cart item's quantity inside the React Query cache.
- *
- * Returns the previous cache structure unchanged when the cart
- * or target item cannot be found.
- */
+interface RestoreCartItemParams {
+  item: CartGroupItem;
+  restaurant: CartRestaurant['restaurant'];
+  itemIndex: number;
+}
+
+// Recalculates cart totals after an optimistic cache update.
+function updateCartSummary(
+  cart: CartResponse,
+  groups: CartRestaurant[],
+): CartResponse {
+  const totalItems = groups.reduce(
+    (total, group) =>
+      total + group.items.reduce((sum, item) => sum + item.quantity, 0),
+    0,
+  );
+
+  const totalPrice = groups.reduce((total, group) => total + group.subtotal, 0);
+
+  return {
+    ...cart,
+    data: {
+      ...cart.data,
+      cart: groups,
+      summary: {
+        ...cart.data?.summary,
+        totalItems,
+        totalPrice,
+        restaurantCount: groups.length,
+      },
+    },
+  };
+}
+
+// Updates an item's quantity and recalculates affected cart totals.
 export function updateCartCache(
   cart: CartResponse | undefined,
   { cartItemId, quantity }: UpdateCartCacheParams,
@@ -23,48 +52,61 @@ export function updateCartCache(
     return cart;
   }
 
-  return {
-    ...cart,
-    data: {
-      ...cart.data,
-      cart: cart.data.cart.map((group) => {
-        const hasTargetItem = group.items.some(
-          (item) => item.id === cartItemId,
-        );
+  const hasTargetItem = cart.data.cart.some((group) =>
+    group.items.some((item) => item.id === cartItemId),
+  );
 
-        if (!hasTargetItem) {
-          return group;
-        }
+  if (!hasTargetItem) {
+    return cart;
+  }
 
-        const items = group.items.map((item) =>
-          item.id === cartItemId ? { ...item, quantity } : item,
-        );
+  const groups = cart.data.cart.map((group) => {
+    if (!group.items.some((item) => item.id === cartItemId)) {
+      return group;
+    }
 
-        const subtotal = items.reduce(
-          (sum, item) => sum + item.menu.price * item.quantity,
-          0,
-        );
+    const items = group.items.map((item) =>
+      item.id === cartItemId
+        ? {
+            ...item,
+            quantity,
+            itemTotal: item.menu.price * quantity,
+          }
+        : item,
+    );
 
-        return {
-          ...group,
-          items,
-          subtotal,
-        };
-      }),
-    },
-  };
+    const subtotal = items.reduce(
+      (sum, item) => sum + item.menu.price * item.quantity,
+      0,
+    );
+
+    return {
+      ...group,
+      items,
+      subtotal,
+    };
+  });
+
+  return updateCartSummary(cart, groups);
 }
 
 /**
- * Removes a cart item from the React Query cache.
- *
- * Empty restaurant groups are removed after the item is deleted.
+ * Removes an item and recalculates the remaining cart totals.
+ * Empty restaurant groups are removed after deletion.
  */
 export function removeCartItemFromCache(
   cart: CartResponse | undefined,
   { cartItemId }: RemoveCartCacheParams,
 ): CartResponse | undefined {
   if (!cart?.data?.cart) {
+    return cart;
+  }
+
+  const hasTargetItem = cart.data.cart.some((group) =>
+    group.items.some((item) => item.id === cartItemId),
+  );
+
+  if (!hasTargetItem) {
     return cart;
   }
 
@@ -76,24 +118,59 @@ export function removeCartItemFromCache(
         return group;
       }
 
-      const subtotal = items.reduce(
-        (sum, item) => sum + item.menu.price * item.quantity,
-        0,
-      );
-
       return {
         ...group,
         items,
-        subtotal,
       };
     })
     .filter((group) => group.items.length > 0);
 
-  return {
-    ...cart,
-    data: {
-      ...cart.data,
-      cart: groups,
-    },
+  return updateCartSummary(cart, groups);
+}
+
+export function restoreCartItemInCache(
+  currentCart: CartResponse | undefined,
+  { item, restaurant, itemIndex }: RestoreCartItemParams,
+): CartResponse | undefined {
+  if (!currentCart?.data?.cart) {
+    return currentCart;
+  }
+
+  const groups = [...currentCart.data.cart];
+  const groupIndex = groups.findIndex(
+    (group) => group.restaurant.id === restaurant.id,
+  );
+
+  const restoredItem: CartGroupItem = {
+    ...item,
+    itemTotal: item.menu.price * item.quantity,
   };
+
+  if (groupIndex === -1) {
+    groups.push({
+      restaurant,
+      items: [restoredItem],
+      subtotal: restoredItem.itemTotal,
+    });
+  } else {
+    const group = groups[groupIndex];
+
+    if (group.items.some((existing) => existing.id === item.id)) {
+      return currentCart;
+    }
+
+    const items = [...group.items];
+    items.splice(Math.min(itemIndex, items.length), 0, restoredItem);
+
+    groups[groupIndex] = {
+      ...group,
+      items,
+      subtotal: items.reduce(
+        (total, current) => total + current.menu.price * current.quantity,
+        0,
+      ),
+    };
+  }
+
+  return updateCartSummary(currentCart, groups);
 }

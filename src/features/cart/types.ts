@@ -1,10 +1,10 @@
-import type { UseMutationResult } from '@tanstack/react-query';
+export type CartMenuType = 'food' | 'drink';
 
 export type CartMenu = {
   readonly id: number;
   readonly foodName: string;
   readonly price: number;
-  readonly type: 'food' | 'drink';
+  readonly type: CartMenuType;
   readonly image: string;
 };
 
@@ -27,7 +27,7 @@ export type CartRestaurant = {
 
 export type CartResponse = {
   readonly success: boolean;
-  readonly message: string;
+  readonly message?: string;
   readonly data?: {
     readonly cart?: CartRestaurant[];
     readonly summary?: {
@@ -38,68 +38,62 @@ export type CartResponse = {
   };
 };
 
-export type CartItemPayload = {
-  readonly itemId: number;
-  readonly menuId: number;
-  readonly restaurantId: number;
-  readonly restaurantName: string;
-  readonly name: string;
-  readonly price: number;
-  readonly image: string;
-  readonly currentQty: number;
-};
-
 export type CartItem = {
   readonly menuId: number;
   readonly restaurantId: number;
   readonly restaurantName: string;
   readonly name: string;
   readonly price: number;
+  readonly type: CartMenuType;
   readonly image: string;
-  qty: number;
-  cartItemId?: number;
+  readonly qty: number;
+  readonly cartItemId?: number;
+};
+
+export type AddCartPayload = {
+  readonly restaurantId: number;
+  readonly restaurantName: string;
+  readonly menuId: number;
+  readonly quantity: number;
+  readonly name: string;
+  readonly price: number;
+  readonly type: CartMenuType;
+  readonly image: string;
+};
+
+export type UpdateCartPayload = {
+  readonly cartItemId: number;
+  readonly menuId: number;
+  readonly quantity: number;
+};
+
+export type DeleteCartPayload = {
+  readonly cartItemId: number;
+  readonly menuId: number;
 };
 
 export type CartApiResponse = {
-  readonly success: boolean
-  readonly data?: {
-    readonly cartItem?: {
-      readonly id: number
-      readonly quantity: number
-    }
-  }
-}
-
-type UpdatePayload = { readonly cartItemId: number; readonly quantity: number };
-type DeletePayload = { readonly cartItemId: number; readonly menuId: number };
-type UpdateResponse = {
-  readonly data?: {
-    readonly cartItem?: { readonly id: number; readonly quantity: number };
-  };
-};
-
-export type CartMutations = {
-  readonly updateMutation: UseMutationResult<
-    UpdateResponse,
-    Error,
-    UpdatePayload
-  >;
-  readonly deleteMutation: UseMutationResult<
-    { success: boolean },
-    Error,
-    DeletePayload
-  >;
-  readonly handleIncrease: (item: CartGroupItem, group: CartRestaurant) => void;
-  readonly handleDecrease: (item: CartGroupItem, group: CartRestaurant) => void;
-};
-
-export type UpdateCartResponse = {
   readonly success: boolean;
   readonly data?: {
-    readonly cartItem?: { readonly id: number; readonly quantity: number };
+    readonly cartItem?: {
+      readonly id: number;
+      readonly quantity: number;
+    };
   };
 };
+
+export type UpdateCartResponse = CartApiResponse;
 
 export type DeleteCartResponse = {
   readonly success: boolean;
 };
+
+export type ClearCartResponse = {
+  readonly success: boolean;
+  readonly message?: string;
+};
+
+export type CartMutationVariables =
+  | AddCartPayload
+  | UpdateCartPayload
+  | DeleteCartPayload;

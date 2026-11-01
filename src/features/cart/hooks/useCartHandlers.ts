@@ -1,102 +1,137 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useMutationState } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
 import type { RootState } from '@/app/store';
-import { upsertItem } from '../cartSlice';
-import type { CartGroupItem, CartRestaurant } from '../types';
+import type { CartItem } from '../types';
+import type { CartMutations } from './useCartMutations';
+import { useNavigate } from 'react-router-dom';
+import { getAuthToken } from '@/features/auth/authStorage';
 
-interface CartMutationHandlers {
-  updateMutation: {
-    isPending: boolean;
-    mutate: (payload: { cartItemId: number; quantity: number }) => void;
-  };
-  deleteMutation: {
-    isPending: boolean;
-    mutate: (payload: { cartItemId: number; menuId: number }) => void;
-  };
-}
+type PendingCartMutationVariables = {
+  menuId?: number;
+};
 
 interface UseCartHandlersProps {
-  mutations: CartMutationHandlers;
+  mutations: CartMutations;
 }
 
+export type CartHandlers = {
+  readonly handleIncrease: (item: CartItem) => void;
+  readonly handleDecrease: (menuId: number) => void;
+  readonly isItemPending: (menuId: number) => boolean;
+};
+
 /**
- * Handles user interactions for changing cart item quantities.
- *
- * Delegates server mutations to the mutation layer while keeping
- * UI interaction logic and guest-cart Redux updates here.
+ * Handles cart item actions while keeping mutation ownership
+ * inside the cart mutation hooks.
  */
-export function useCartHandlers({ mutations }: UseCartHandlersProps) {
-  const dispatch = useDispatch();
+export function useCartHandlers({
+  mutations,
+}: UseCartHandlersProps): CartHandlers {
   const cartItems = useSelector((state: RootState) => state.cart.items);
-  const { updateMutation, deleteMutation } = mutations;
+  const navigate = useNavigate();
+
+  const requireAuth = useCallback(() => {
+    if (getAuthToken()) {
+      return true;
+    }
+
+    navigate('/auth', {
+      state: { tab: 'signin' },
+    });
+
+    return false;
+  }, [navigate]);
+
+  // Track pending mutations so the same item cannot be changed twice.
+  const pendingMenuIds = useMutationState<number | undefined>({
+    filters: {
+      mutationKey: ['cart'],
+      status: 'pending',
+    },
+    select: (mutation) => {
+      const variables = mutation.state.variables as
+        | PendingCartMutationVariables
+        | undefined;
+
+      return variables?.menuId;
+    },
+  });
+
   const isItemPending = useCallback(
-    (cartItemId: number) =>
-      cartItems.some((item) => item.cartItemId === cartItemId) &&
-      (updateMutation.isPending || deleteMutation.isPending),
-    [cartItems, updateMutation.isPending, deleteMutation.isPending],
+    (menuId: number) =>
+      pendingMenuIds.some((pendingMenuId) => pendingMenuId === menuId),
+    [pendingMenuIds],
   );
 
   const handleIncrease = useCallback(
-    (item: CartGroupItem, group: CartRestaurant) => {
-      if (isItemPending(item.id)) {
+    (item: CartItem) => {
+      if (!requireAuth() || isItemPending(item.menuId)) {
         return;
       }
-      const nextQuantity = item.quantity + 1;
 
-      dispatch(
-        upsertItem({
-          menuId: item.menu.id,
-          cartItemId: item.id,
-          name: item.menu.foodName,
-          price: item.menu.price,
-          image: item.menu.image,
-          restaurantId: group.restaurant.id,
-          restaurantName: group.restaurant.name,
-          qty: nextQuantity,
-        }),
+      const existingItem = cartItems.find(
+        (cartItem) => cartItem.menuId === item.menuId,
       );
-      updateMutation.mutate({
-        cartItemId: item.id,
-        quantity: nextQuantity,
-      });
-    },
-    [dispatch, isItemPending, updateMutation],
-  );
 
-  const handleDecrease = useCallback(
-    (item: CartGroupItem, group: CartRestaurant) => {
-      if (isItemPending(item.id)) {
-        return;
-      }
-      const nextQuantity = item.quantity - 1;
-
-      if (nextQuantity <= 0) {
-        deleteMutation.mutate({
-          cartItemId: item.id,
-          menuId: item.menu.id,
+      // Existing server items use the update mutation.
+      if (existingItem?.cartItemId) {
+        mutations.updateMutation.mutate({
+          cartItemId: existingItem.cartItemId,
+          menuId: existingItem.menuId,
+          quantity: existingItem.qty + 1,
         });
 
         return;
       }
 
-      dispatch(
-        upsertItem({
-          menuId: item.menu.id,
-          cartItemId: item.id,
-          name: item.menu.foodName,
-          price: item.menu.price,
-          image: item.menu.image,
-          restaurantId: group.restaurant.id,
-          restaurantName: group.restaurant.name,
-          qty: nextQuantity,
-        }),
-      );
-      updateMutation.mutate({
-        cartItemId: item.id,
+      // New items are added through the server mutation.
+      mutations.addMutation.mutate({
+        restaurantId: item.restaurantId,
+        restaurantName: item.restaurantName,
+        menuId: item.menuId,
+        quantity: 1,
+        name: item.name,
+        price: item.price,
+        type: item.type,
+        image: item.image,
+      });
+    },
+    [requireAuth, isItemPending, cartItems, mutations],
+  );
+
+  const handleDecrease = useCallback(
+    (menuId: number) => {
+      if (!requireAuth() || isItemPending(menuId)) {
+        return;
+      }
+
+      const item = cartItems.find((cartItem) => cartItem.menuId === menuId);
+
+      if (!item?.cartItemId) {
+        return;
+      }
+
+      const nextQuantity = item.qty - 1;
+
+      // Remove the server-backed item when its quantity reaches zero.
+      if (nextQuantity <= 0) {
+        mutations.deleteMutation.mutate({
+          cartItemId: item.cartItemId,
+          menuId: item.menuId,
+        });
+
+        return;
+      }
+
+      // Keep the server-backed quantity synchronized with the API.
+      mutations.updateMutation.mutate({
+        cartItemId: item.cartItemId,
+        menuId: item.menuId,
         quantity: nextQuantity,
       });
     },
-    [deleteMutation, dispatch, isItemPending, updateMutation],
+    [requireAuth, cartItems, isItemPending, mutations],
   );
 
   return {

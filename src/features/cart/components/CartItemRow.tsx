@@ -1,5 +1,8 @@
 import { formatRupiah } from '@/lib/format';
 import type { CartGroupItem } from '../types';
+import minusIcon from '@/assets/minus.svg';
+import plusIcon from '@/assets/plus.svg';
+import foodPlaceholder from '@/assets/details-dummy-1.svg';
 
 interface CartItemRowProps {
   item: CartGroupItem;
@@ -21,24 +24,29 @@ export default function CartItemRow({
   const quantityLabel = `Quantity of ${item.menu.foodName}`;
 
   return (
-    <div className='flex items-center justify-between border-b border-neutral-100 py-2 last:border-0'>
+    <div className='flex items-center justify-between border-b border-border py-3 last:border-0'>
       {/* Product information */}
-      <div className='flex min-w-0 items-center gap-4'>
-        <div
-          role='img'
-          aria-label={item.menu.foodName}
-          className='h-16 w-16 shrink-0 rounded-2xl bg-cover bg-center bg-no-repeat md:h-20 md:w-20'
-          style={{
-            backgroundImage: `url('${item.menu.image}')`,
+      <div className='flex min-w-0 items-center gap-3 md:gap-4'>
+        <img
+          src={item.menu.image || foodPlaceholder}
+          alt={item.menu.foodName}
+          loading='lazy'
+          decoding='async'
+          onError={(event) => {
+            const image = event.currentTarget;
+
+            image.onerror = null;
+            image.src = foodPlaceholder;
           }}
+          className='h-16 w-16 shrink-0 rounded-2xl object-cover md:h-20 md:w-20'
         />
 
         <div className='flex min-w-0 flex-col justify-center'>
-          <span className='truncate text-sm font-medium leading-7 -tracking-[0.03em] md:text-base'>
+          <span className='truncate text-sm font-medium leading-7 -tracking-[0.03em] text-text md:text-base'>
             {item.menu.foodName}
           </span>
 
-          <span className='text-base font-extrabold leading-relaxed -tracking-[0.02em] text-neutral-900 md:text-lg'>
+          <span className='text-base font-extrabold leading-relaxed -tracking-[0.02em] text-text md:text-lg'>
             {formatRupiah(item.menu.price)}
           </span>
         </div>
@@ -46,27 +54,28 @@ export default function CartItemRow({
 
       {/* Quantity controls */}
       <div
-        className='ml-4 flex shrink-0 items-center gap-4'
+        role='group'
         aria-label={quantityLabel}
+        className='ml-3 flex shrink-0 items-center gap-3 md:ml-4 md:gap-4'
       >
         <button
           type='button'
           aria-label={`Decrease ${quantityLabel}`}
           onClick={onDecrease}
           disabled={isPending}
-          className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full ring-1 ring-inset ring-neutral-300 disabled:cursor-not-allowed disabled:opacity-50 md:h-10 md:w-10'
+          className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border-strong bg-surface-subtle text-text transition-colors hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50 md:h-10 md:w-10'
         >
           <img
-            src='/images/common/minus.svg'
+            src={minusIcon}
             alt=''
             aria-hidden='true'
-            className='h-5 w-5 md:h-6 md:w-6'
+            className='h-5 w-5 md:h-6 md:w-6 invert'
           />
         </button>
 
         <span
           aria-live='polite'
-          className='min-w-6 text-center text-[16px] font-bold leading-none -tracking-[0.02em] text-neutral-800 md:text-[18px]'
+          className='min-w-6 text-center text-[16px] font-bold leading-none -tracking-[0.02em] text-text md:text-[18px]'
         >
           {item.quantity}
         </span>
@@ -76,10 +85,10 @@ export default function CartItemRow({
           aria-label={`Increase ${quantityLabel}`}
           onClick={onIncrease}
           disabled={isPending}
-          className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-primary-100 hover:bg-primary-200 disabled:cursor-not-allowed disabled:opacity-50 md:h-10 md:w-10'
+          className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-primary-100 text-white transition-colors hover:bg-primary-200 disabled:cursor-not-allowed disabled:opacity-50 md:h-10 md:w-10'
         >
           <img
-            src='/images/common/plus.svg'
+            src={plusIcon}
             alt=''
             aria-hidden='true'
             className='h-5 w-5 md:h-6 md:w-6'

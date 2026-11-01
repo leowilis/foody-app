@@ -1,29 +1,38 @@
-import { useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useIsMutating, useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useMemo } from 'react';
 import type { RootState } from '@/app/store';
 import { setItems } from '@/features/cart/cartSlice';
 import { api } from '@/lib/api';
 import { CART_API, CART_QUERY_KEY } from '../constants/cart.constants';
 import type { CartResponse, CartRestaurant } from '../types';
+import { useIsAuthenticated } from '@/features/auth/hooks/useIsAuthenticated';
+import restaurantPlaceholder from '@/assets/icon-restaurant-dummy.svg';
 
 /**
- * Fetches the authenticated cart and keeps Redux synchronized
- * with the latest API cart data.
+ * Fetches the authenticated user's cart and keeps Redux
+ * synchronized with the server state.
  */
 export function useCartData() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
+  const pendingCartMutations = useIsMutating({ mutationKey: CART_QUERY_KEY });
+  const isAuthenticated = useIsAuthenticated();
 
   const query = useQuery({
     queryKey: CART_QUERY_KEY,
     queryFn: async () => {
-      const res = await api.get<CartResponse>(CART_API.BASE);
-      return res.data;
+      const response = await api.get<CartResponse>(CART_API.BASE);
+      return response.data;
     },
+    enabled: isAuthenticated,
   });
 
   useEffect(() => {
+    if (pendingCartMutations > 0 || query.isFetching) {
+      return;
+    }
+
     const apiCart = query.data?.data?.cart;
 
     if (!apiCart) {
@@ -36,6 +45,7 @@ export function useCartData() {
         cartItemId: item.id,
         name: item.menu.foodName,
         price: item.menu.price,
+        type: item.menu.type,
         image: item.menu.image,
         restaurantId: group.restaurant.id,
         restaurantName: group.restaurant.name,
@@ -44,9 +54,9 @@ export function useCartData() {
     );
 
     dispatch(setItems(apiItems));
-  }, [query.data, dispatch]);
+  }, [dispatch, pendingCartMutations, query.data, query.isFetching]);
 
-  const reduxCartGroups = useMemo<CartRestaurant[]>(() => {
+  const cartGroups = useMemo<CartRestaurant[]>(() => {
     if (cartItems.length === 0) {
       return [];
     }
@@ -61,12 +71,13 @@ export function useCartData() {
             id: item.menuId,
             foodName: item.name,
             price: item.price,
-            type: 'food' as const,
+            type: item.type,
             image: item.image,
           },
           quantity: item.qty,
           itemTotal,
         };
+
         const existingGroup = acc[item.restaurantId];
 
         if (!existingGroup) {
@@ -74,7 +85,7 @@ export function useCartData() {
             restaurant: {
               id: item.restaurantId,
               name: item.restaurantName,
-              logo: '/images/common/icon-restaurant-dummy.svg',
+              logo: restaurantPlaceholder,
             },
             items: [cartItem],
             subtotal: itemTotal,
@@ -82,6 +93,7 @@ export function useCartData() {
 
           return acc;
         }
+
         acc[item.restaurantId] = {
           ...existingGroup,
           items: [...existingGroup.items, cartItem],
@@ -95,9 +107,6 @@ export function useCartData() {
 
     return Object.values(grouped);
   }, [cartItems]);
-
-  const apiCart = query.data?.data?.cart;
-  const cartGroups = apiCart && apiCart.length > 0 ? apiCart : reduxCartGroups;
 
   return {
     cartGroups,
