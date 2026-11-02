@@ -2,8 +2,8 @@ import * as React from 'react';
 import { motion } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useSignInForm } from '@/features/auth/hooks/useAuthForms';
-import FieldWrapper from './FieldWrapper';
 import EyeToggle from './EyeToggle';
+import FieldWrapper from './FieldWrapper';
 import SubmitButton from './SubmitButton';
 
 const fadeSlide = {
@@ -14,13 +14,14 @@ const fadeSlide = {
 };
 
 const inputBase =
-  'h-12 md:h-14 w-full rounded-2xl border bg-white px-3 text-base outline-none placeholder:text-neutral-500 placeholder:-tracking-[0.02em]';
-const inputNormal = 'border-neutral-200 focus:border-neutral-300';
-const inputError = 'border-red-400 focus:border-red-400';
+  'h-12 w-full rounded-2xl border bg-surface px-3 text-base text-text outline-none placeholder:text-text-muted placeholder:-tracking-[0.02em] md:h-14';
+const inputNormal = 'border-border focus:border-border-strong';
+const inputError = 'border-error focus:border-error';
 
 export default function SignInForm() {
   const { form, onSubmit, formError } = useSignInForm();
   const [showPassword, setShowPassword] = React.useState(false);
+
   const {
     register,
     formState: { errors, isSubmitting },
@@ -50,11 +51,14 @@ export default function SignInForm() {
             type={showPassword ? 'text' : 'password'}
             placeholder='Password'
             {...register('password')}
-            className={`${inputBase} pr-14 ${errors.password ? inputError : inputNormal}`}
+            className={`${inputBase} pr-14 ${
+              errors.password ? inputError : inputNormal
+            }`}
           />
+
           <EyeToggle
             show={showPassword}
-            onToggle={() => setShowPassword((s) => !s)}
+            onToggle={() => setShowPassword((state) => !state)}
           />
         </div>
       </FieldWrapper>
@@ -63,14 +67,19 @@ export default function SignInForm() {
         <Checkbox
           checked={watch('remember')}
           onCheckedChange={(checked) => setValue('remember', Boolean(checked))}
-          className='h-6 w-6 cursor-pointer rounded-md border-neutral-300 data-[state=checked]:border-primary-100 data-[state=checked]:bg-primary-100'
+          className='h-6 w-6 cursor-pointer rounded-md border-border data-[state=checked]:border-primary-100 data-[state=checked]:bg-primary-100'
         />
-        <span className='text-[14px] font-medium leading-7 -tracking-[0.03em] text-neutral-900 md:text-[16px] md:leading-7.5'>
+
+        <span className='text-[14px] font-medium leading-7 -tracking-[0.03em] text-text md:text-[16px] md:leading-7.5'>
           Remember Me
         </span>
       </label>
 
-      {formError && <p className='text-sm text-red-600'>{formError}</p>}
+      {formError && (
+        <p role='alert' className='text-sm text-error'>
+          {formError}
+        </p>
+      )}
 
       <SubmitButton loading={isSubmitting} label='Login' />
     </motion.form>

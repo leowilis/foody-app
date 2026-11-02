@@ -1,4 +1,6 @@
 export const AUTH_API = {
+  LOGIN: '/api/auth/login',
+  REGISTER: '/api/auth/register',
   PROFILE: '/api/auth/profile',
 } as const;
 

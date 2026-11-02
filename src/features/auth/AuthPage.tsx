@@ -1,11 +1,11 @@
 import React, { startTransition } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AnimatePresence } from 'framer-motion';
-import SignInForm from './components/SignInForm';
-import SignUpForm from './components/SignUpForm';
 import burgerSvg from '@/assets/burger.svg';
 import MainLogo from '@/assets/logo-foody.svg';
+import SignInForm from './components/SignInForm';
+import SignUpForm from './components/SignUpForm';
 
 export default function AuthPage() {
   const location = useLocation();
@@ -24,7 +24,7 @@ export default function AuthPage() {
   }, [location.search, location.state]);
 
   return (
-    <div className='h-screen w-full bg-white'>
+    <div className='h-screen w-full bg-background'>
       <div className='flex h-screen w-full'>
         {/* Left - Illustration */}
         <div className='relative hidden flex-1 items-center justify-center md:flex'>
@@ -47,17 +47,19 @@ export default function AuthPage() {
                 className='h-8 w-8 md:h-10.5 md:w-10.5'
                 draggable={false}
               />
-              <span className='text-[24.38px] font-extrabold leading-8 text-neutral-950 md:text-[32px] md:leading-10.5'>
+
+              <span className='text-[24.38px] font-extrabold leading-8 text-text md:text-[32px] md:leading-10.5'>
                 Foody
               </span>
             </div>
 
             {/* Title */}
             <div className='flex flex-col gap-0 md:gap-1'>
-              <h1 className='text-[24px] font-extrabold leading-9 text-black md:text-[28px] md:leading-9.5'>
+              <h1 className='text-[24px] font-extrabold leading-9 text-text md:text-[28px] md:leading-9.5'>
                 {tab === 'signin' ? 'Welcome Back' : 'Create Account'}
               </h1>
-              <p className='text-[14px] leading-7 -tracking-[0.03em] text-neutral-950 md:text-[16px] md:leading-7.5'>
+
+              <p className='text-[14px] leading-7 -tracking-[0.03em] text-text-secondary md:text-[16px] md:leading-7.5'>
                 {tab === 'signin'
                   ? "Good to see you again! Let's eat"
                   : 'Join us and start your culinary journey'}
@@ -67,18 +69,19 @@ export default function AuthPage() {
             {/* Tabs */}
             <Tabs
               value={tab}
-              onValueChange={(v) => setTab(v as 'signin' | 'signup')}
+              onValueChange={(value) => setTab(value as 'signin' | 'signup')}
             >
-              <TabsList className='h-16 w-full cursor-pointer rounded-full bg-neutral-100 p-1'>
+              <TabsList className='h-16 w-full cursor-pointer rounded-pill bg-surface-subtle p-1'>
                 <TabsTrigger
                   value='signin'
-                  className='h-full w-1/2 cursor-pointer rounded-full text-base font-semibold text-neutral-600 data-active:bg-white data-active:text-neutral-900 data-active:shadow-sm'
+                  className='h-full w-1/2 cursor-pointer rounded-pill text-base font-semibold text-text-secondary data-active:bg-surface data-active:text-text data-active:shadow-foody-sm'
                 >
                   Sign in
                 </TabsTrigger>
+
                 <TabsTrigger
                   value='signup'
-                  className='h-full w-1/2 cursor-pointer rounded-full text-base font-semibold text-neutral-600 data-active:bg-white data-active:text-neutral-900 data-active:shadow-sm'
+                  className='h-full w-1/2 cursor-pointer rounded-pill text-base font-semibold text-text-secondary data-active:bg-surface data-active:text-text data-active:shadow-foody-sm'
                 >
                   Sign up
                 </TabsTrigger>
