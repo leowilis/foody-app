@@ -1,23 +1,44 @@
 import axios from 'axios';
 
-// Extracts a human-readable message from an Axios error.
-export const getErrorMessage = (err: unknown): string => {
-  if (axios.isAxiosError(err)) {
-    const data = err.response?.data as { message?: string } | undefined;
-    if (data?.message) return data.message;
-    if (err.code === 'ECONNABORTED')
+// Extracts a human-readable message from an unknown error.
+export const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as
+      | { message?: string; errors?: string[] }
+      | undefined;
+
+    if (data?.errors?.length) {
+      return data.errors.join(', ');
+    }
+
+    if (data?.message) {
+      return data.message;
+    }
+
+    if (error.code === 'ECONNABORTED') {
       return 'Request timeout. Please try again.';
-    if (!err.response) return 'Unable to connect to server.';
+    }
+
+    if (!error.response) {
+      return 'Unable to connect to server.';
+    }
   }
+
+  if (error instanceof Error && error.message.trim()) {
+    return error.message;
+  }
+
   return 'Failed to load data.';
 };
 
 // Checks whether the error represents an unauthorized (401) response.
-export const isUnauthorizedError = (err: unknown): boolean => {
-  if (axios.isAxiosError(err)) {
-    const status = err.response?.status;
-    const data = err.response?.data as { message?: string } | undefined;
-    return status === 401 || data?.message === 'Access token required';
+export const isUnauthorizedError = (error: unknown): boolean => {
+  if (!axios.isAxiosError(error)) {
+    return false;
   }
-  return false;
+
+  const status = error.response?.status;
+  const data = error.response?.data as { message?: string } | undefined;
+
+  return status === 401 || data?.message === 'Access token required';
 };
