@@ -1,24 +1,13 @@
 import { Navigate, Outlet } from 'react-router-dom';
+import { useIsAuthenticated } from '@/features/auth/hooks/useIsAuthenticated';
 
-/**
- * Retrieves the authentication token from persistent browser caches.
- * Prioritizes localStorage (persistent sessions), falling back to sessionStorage (temporary sessions).
- */
-const getAuthToken = (): string | null => {
-  try {
-    return (
-      localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token')
-    );
-  } catch {
-    return null;
-  }
-};
-
+// Protects authenticated routes by requiring an active auth token.
 export default function ProtectedRoute() {
-  const isAuthorized = Boolean(getAuthToken());
+  const isAuthenticated = useIsAuthenticated();
 
-  if (!isAuthorized) {
+  if (!isAuthenticated) {
     return <Navigate to='/auth' replace />;
   }
+
   return <Outlet />;
 }

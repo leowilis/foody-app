@@ -1,13 +1,13 @@
+import { useNavbar } from './hooks/useNavbar';
+import Logo from '@/assets/logo-foody.svg';
 import CartButton from './CartButton';
 import ProfileMenu from './ProfileMenu';
-import type { useNavbar } from './hooks/useNavbar';
-import Logo from '@/assets/logo-foody.svg';
 
 interface NavbarMobileProps {
   navbar: ReturnType<typeof useNavbar>;
 }
 
-// Mobile navbar — logo, cart, and profile avatar.
+// Renders the mobile navigation with branding and user actions.
 export default function NavbarMobile({ navbar }: NavbarMobileProps) {
   const {
     isLogin,
@@ -27,7 +27,7 @@ export default function NavbarMobile({ navbar }: NavbarMobileProps) {
         type='button'
         onClick={() => navigate('/')}
         aria-label='Foody homepage'
-        className='transition-opacity hover:opacity-80'
+        className='rounded-lg outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary-100'
       >
         <img src={Logo} alt='Foody' className='h-9 w-9 object-contain' />
       </button>
@@ -40,7 +40,6 @@ export default function NavbarMobile({ navbar }: NavbarMobileProps) {
           <ProfileMenu
             profileName={profileName}
             profileAvatar={profileAvatar}
-            isScrolled
             onLogout={handleLogout}
             getInitials={getInitials}
           />
@@ -54,7 +53,7 @@ export default function NavbarMobile({ navbar }: NavbarMobileProps) {
                 state: { tab: 'signin' },
               })
             }
-            className='rounded-full border border-neutral-200 px-4 py-2 text-sm font-bold text-neutral-900 transition-colors hover:bg-neutral-50'
+            className='rounded-pill border border-border-strong px-4 py-2 text-sm font-bold text-text outline-none transition-colors hover:bg-surface-subtle focus-visible:ring-2 focus-visible:ring-primary-100'
           >
             Sign In
           </button>
@@ -66,7 +65,7 @@ export default function NavbarMobile({ navbar }: NavbarMobileProps) {
                 state: { tab: 'signup' },
               })
             }
-            className='rounded-full bg-neutral-950 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-neutral-800'
+            className='rounded-pill bg-primary-100 px-4 py-2 text-sm font-bold text-primary-foreground shadow-foody-sm outline-none transition-colors hover:bg-primary-200 focus-visible:ring-2 focus-visible:ring-primary-100'
           >
             Sign Up
           </button>

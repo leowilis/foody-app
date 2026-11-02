@@ -1,106 +1,97 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import axios from 'axios';
-import { api } from '@/lib/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import type { RootState } from '@/app/store';
 import { clearCart } from '@/features/cart/cartSlice';
-import { clearFilters } from '@/features/filters/categoryFilterSlice';
+import type { CartResponse } from '@/features/cart/types';
+import {
+  AUTH_STORAGE_EVENT_NAME,
+  clearAuthSession,
+  getAuthToken,
+  getAuthUser,
+} from '@/features/auth/authStorage';
+import { api } from '@/lib/api';
+import {
+  CART_API,
+  CART_QUERY_KEY,
+} from '@/features/cart/constants/cart.constants';
+import { CHECKOUT_SUCCESS_STORAGE_KEY } from '@/config/storage.constants';
 
-
-type AuthUser = {
-  name?: string;
-  avatar?: string | null;
-};
-
-// Manages navbar scroll state, auth state, cart count, and logout.
+// Manages navbar authentication state, cart count, and logout.
 export function useNavbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const queryClient = useQueryClient(); 
-  const [isScrolled, setIsScrolled] = useState(false);
+  const queryClient = useQueryClient();
   const [isLogin, setIsLogin] = useState(false);
   const [profileName, setProfileName] = useState('User');
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
-
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const reduxCartCount = cartItems.reduce((total, item) => total + item.qty, 0);
 
-  const { data: cartData, error: cartErr } = useQuery({
-    queryKey: ['cart'],
-    queryFn: async () => {
-      const res = await api.get('/api/cart');
-      return res.data as { data?: { summary?: { totalItems: number } } };
+  const { data: cartData } = useQuery({
+    queryKey: CART_QUERY_KEY,
+    queryFn: async (): Promise<CartResponse> => {
+      const response = await api.get<CartResponse>(CART_API.BASE);
+
+      return response.data;
     },
     enabled: isLogin,
   });
 
-  const serverCartCount =
-    axios.isAxiosError(cartErr) && cartErr.response?.status === 401
-      ? 0
-      : (cartData?.data?.summary?.totalItems ?? 0);
-
-  const cartCount = Math.max(reduxCartCount, serverCartCount);
-
-  useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 0);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  const serverCartCount = cartData?.data?.summary?.totalItems;
+  const cartCount = isLogin ? (serverCartCount ?? reduxCartCount) : 0;
 
   useEffect(() => {
     const syncAuth = () => {
-      const token =
-        localStorage.getItem('auth_token') ??
-        sessionStorage.getItem('auth_token');
+      const token = getAuthToken();
+      const user = getAuthUser();
+
       setIsLogin(Boolean(token));
 
-      const raw =
-        localStorage.getItem('auth_user') ??
-        sessionStorage.getItem('auth_user');
-      if (!raw) {
+      if (!user) {
         setProfileName('User');
         setProfileAvatar(null);
         return;
       }
-      try {
-        const parsed = JSON.parse(raw) as AuthUser;
-        setProfileName(parsed.name ?? 'User');
-        setProfileAvatar(parsed.avatar ?? null);
-      } catch {
-        setProfileName('User');
-        setProfileAvatar(null);
-      }
+
+      setProfileName(user.name ?? 'User');
+      setProfileAvatar(user.avatar ?? null);
     };
 
     syncAuth();
+
     window.addEventListener('storage', syncAuth);
-    return () => window.removeEventListener('storage', syncAuth);
+    window.addEventListener(AUTH_STORAGE_EVENT_NAME, syncAuth);
+
+    return () => {
+      window.removeEventListener('storage', syncAuth);
+      window.removeEventListener(AUTH_STORAGE_EVENT_NAME, syncAuth);
+    };
   }, []);
 
   const handleCartClick = () => {
-    if (cartCount > 0) {
-      navigate('/mycart');
-    } else {
-      toast('Your cart is still empty.', {
-        description: "Let's add a favorite menu first!",
-      });
-    }
+    navigate('/mycart');
   };
 
   const handleLogout = () => {
-    queryClient.clear(); 
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_user');
-    localStorage.removeItem('cart_state');
-    sessionStorage.removeItem('auth_token');
-    sessionStorage.removeItem('auth_user');
+    queryClient.clear();
+    clearAuthSession();
     dispatch(clearCart());
-    dispatch(clearFilters());
+
+    try {
+      sessionStorage.removeItem(CHECKOUT_SUCCESS_STORAGE_KEY);
+    } catch {
+      // Session storage may be unavailable.
+    }
+
     setIsLogin(false);
-    navigate('/auth', { state: { tab: 'signin' } });
+
+    navigate('/auth', {
+      state: {
+        tab: 'signin',
+      },
+    });
   };
 
   const getInitials = (name: string) =>
@@ -108,11 +99,10 @@ export function useNavbar() {
       .split(' ')
       .filter(Boolean)
       .slice(0, 2)
-      .map((p) => p[0]?.toUpperCase())
+      .map((part) => part[0]?.toUpperCase())
       .join('') || 'US';
 
   return {
-    isScrolled,
     isLogin,
     profileName,
     profileAvatar,

@@ -1,6 +1,14 @@
 import { Suspense, type ReactNode } from 'react';
 
-// Wraps lazy-loaded components with Suspense fallback.
-export default function LazyWrapper({ children }: { children: ReactNode }) {
-  return <Suspense fallback={null}>{children}</Suspense>;
+interface LazyWrapperProps {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+
+// Wraps lazy-loaded content with a configurable Suspense fallback.
+export default function LazyWrapper({
+  children,
+  fallback = null,
+}: LazyWrapperProps) {
+  return <Suspense fallback={fallback}>{children}</Suspense>;
 }
