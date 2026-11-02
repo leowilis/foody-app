@@ -2,34 +2,40 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 @import '@fontsource-variable/plus-jakarta-sans';
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* --------------------------------
-   * Foody Brand
-   * -------------------------------- */
+  /* Foody Brand */
+  --foody-primary: #ff6b35;
+  --foody-primary-hover: #ff824f;
 
-  --foody-primary: #e94f2b;
-  --foody-primary-hover: #c93f22;
+  /* Canvas & Surface */
+  --foody-canvas: #0f0f0f;
+  --foody-surface: #181818;
+  --foody-surface-subtle: #222222;
 
-  --foody-canvas: #fff9f5;
-  --foody-surface: #ffffff;
+  /* Text */
+  --foody-text: #f8f8f8;
+  --foody-text-secondary: #a3a3a3;
+  --foody-text-muted: #737373;
 
-  --foody-text: #171411;
-  --foody-text-secondary: #6f6862;
-  --foody-text-muted: #a59c94;
+  /* Border */
+  --foody-border: #2a2a2a;
+  --foody-border-strong: #3a3a3a;
 
-  --foody-border: #e9e1db;
+  /* Semantic */
+  --foody-success: #35c979;
+  --foody-warning: #f2a93b;
+  --foody-error: #ef5350;
+  --foody-info: #5b9cff;
 
-  --foody-success: #2e9b63;
-  --foody-warning: #d99124;
-  --foody-error: #d64545;
-  --foody-info: #3b82f6;
+  /* Foody Elevation */
+  --foody-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.18);
+  --foody-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.24);
+  --foody-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.32);
 
-  /* --------------------------------
-   * Shadcn / Semantic Tokens
-   * -------------------------------- */
-
+  /* Shadcn / Semantic Tokens */
   --background: var(--foody-canvas);
   --foreground: var(--foody-text);
 
@@ -42,13 +48,13 @@
   --primary: var(--foody-primary);
   --primary-foreground: #ffffff;
 
-  --secondary: #f5eee9;
+  --secondary: #242424;
   --secondary-foreground: var(--foody-text);
 
-  --muted: #f5eee9;
+  --muted: #242424;
   --muted-foreground: var(--foody-text-secondary);
 
-  --accent: #fff0eb;
+  --accent: var(--foody-surface-subtle);
   --accent-foreground: var(--foody-text);
 
   --destructive: var(--foody-error);
@@ -79,9 +85,10 @@ body {
   --color-primary-100: var(--foody-primary);
   --color-primary-200: var(--foody-primary-hover);
 
-  /* Canvas & surface */
+  /* Canvas & Surface */
   --color-canvas: var(--foody-canvas);
   --color-surface: var(--foody-surface);
+  --color-surface-subtle: var(--foody-surface-subtle);
 
   /* Text */
   --color-text: var(--foody-text);
@@ -96,6 +103,12 @@ body {
 
   /* Border */
   --color-border: var(--foody-border);
+  --color-border-strong: var(--foody-border-strong);
+
+  /* Shadow */
+  --shadow-foody-sm: var(--foody-shadow-sm);
+  --shadow-foody-md: var(--foody-shadow-md);
+  --shadow-foody-lg: var(--foody-shadow-lg);
 
   /* Shadcn */
   --color-ring: var(--ring);
