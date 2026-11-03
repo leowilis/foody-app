@@ -16,7 +16,8 @@ interface RestaurantListProps {
   isError: boolean;
   errorMessage: string;
   shouldLogin: boolean;
-  items: RecommendedItem[];
+  isLocationUnavailable: boolean;
+  items: readonly RecommendedItem[];
 }
 
 // Displays restaurant results and their current state.
@@ -27,6 +28,7 @@ export default function RestaurantList({
   isError,
   errorMessage,
   shouldLogin,
+  isLocationUnavailable,
   items,
 }: RestaurantListProps) {
   const navigate = useNavigate();
@@ -72,6 +74,33 @@ export default function RestaurantList({
           <RestaurantCardSkeleton key={`restaurant-skeleton-${index}`} />
         ))}
       </>
+    );
+  }
+
+  if (isLocationUnavailable) {
+    return (
+      <div className='col-span-full select-none'>
+        <Alert className='rounded-3xl border border-border bg-surface p-6'>
+          <AlertTitle className='text-base font-bold tracking-tight text-text'>
+            Location unavailable
+          </AlertTitle>
+
+          <AlertDescription className='mt-1 text-sm font-medium text-text-secondary'>
+            Your location has not been configured yet. You can explore available
+            restaurants instead.
+          </AlertDescription>
+
+          <div className='pt-4'>
+            <Button
+              type='button'
+              onClick={() => navigate('/category')}
+              className='h-11 w-full cursor-pointer rounded-pill text-sm font-bold shadow-foody-sm sm:w-60'
+            >
+              Explore Restaurants
+            </Button>
+          </div>
+        </Alert>
+      </div>
     );
   }
 

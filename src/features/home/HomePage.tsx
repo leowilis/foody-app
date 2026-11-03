@@ -72,10 +72,10 @@ export default function HomePage() {
     isError,
     errorMessage,
     shouldLogin,
+    isLocationUnavailable,
     recommendedQuery,
     bestSellerQuery,
     allRestaurantsQuery,
-    nearbyQuery,
     nearbyRangeKm,
   } = useActiveListData(resolvedActiveList, keyword);
 
@@ -86,9 +86,7 @@ export default function HomePage() {
       ? bestSellerQuery
       : resolvedActiveList === 'all-restaurants'
         ? allRestaurantsQuery
-        : resolvedActiveList === 'nearby'
-          ? nearbyQuery
-          : null;
+        : null;
 
   const titleText = getTitle(resolvedActiveList, keyword, nearbyRangeKm);
 
@@ -130,6 +128,7 @@ export default function HomePage() {
               isError={isError}
               errorMessage={errorMessage}
               shouldLogin={shouldLogin}
+              isLocationUnavailable={isLocationUnavailable}
               items={items}
             />
           </div>

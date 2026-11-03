@@ -42,3 +42,18 @@ export const isUnauthorizedError = (error: unknown): boolean => {
 
   return status === 401 || data?.message === 'Access token required';
 };
+
+// Checks whether the error indicates that the user's location is not configured.
+export const isLocationNotSetError = (error: unknown): boolean => {
+  if (!axios.isAxiosError(error)) {
+    return false;
+  }
+
+  const data = error.response?.data as { message?: string } | undefined;
+
+  return (
+    error.response?.status === 400 &&
+    data?.message ===
+      'User location not set. Please update your location first.'
+  );
+};
