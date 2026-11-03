@@ -1,12 +1,13 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import {
+  HOME_API,
+  HOME_QUERY_CONFIG,
+  HOME_QUERY_KEYS,
+} from '@/features/home/constants/home.constants';
 import { SEARCH_CONFIG } from '@/features/search/search.constants';
 import { api } from '@/lib/api';
-import type { ActiveList, RecommendedResponse } from '../types';
+import type { ActiveList, NearbyResponse, RecommendedResponse } from '../types';
 import { useDebouncedValue } from './useDebouncedValue';
-
-const LIST_LIMIT = 20;
-const NEARBY_RANGE_KM = 1;
-const RECOMMENDED_STALE_TIME = 5 * 60 * 1000;
 
 const getNextPageParam = (
   lastPage: RecommendedResponse,
@@ -14,13 +15,21 @@ const getNextPageParam = (
 ): number | undefined => {
   const pagination = lastPage.data?.pagination;
 
-  if (pagination?.page !== undefined && pagination?.totalPages !== undefined) {
+  if (pagination) {
+    if (pagination.page === undefined || pagination.totalPages === undefined) {
+      return undefined;
+    }
+
     return pagination.page < pagination.totalPages
       ? pagination.page + 1
       : undefined;
   }
+
   const restaurantCount = lastPage.data?.restaurants?.length ?? 0;
-  return restaurantCount < LIST_LIMIT ? undefined : allPages.length + 1;
+
+  return restaurantCount < HOME_QUERY_CONFIG.listLimit
+    ? undefined
+    : allPages.length + 1;
 };
 
 // Provides restaurant queries for the home page.
@@ -29,81 +38,94 @@ export function useHomeQueries(activeList: ActiveList, keyword: string) {
     keyword,
     SEARCH_CONFIG.debounceDelay,
   );
+
   const trimmedDebouncedKeyword = debouncedKeyword.trim();
 
   const recommendedQuery = useQuery({
-    queryKey: ['recommended-resto'],
+    queryKey: HOME_QUERY_KEYS.recommended,
     queryFn: async () => {
-      const res = await api.get<RecommendedResponse>('/api/resto/recommended');
-      return res.data;
+      const response = await api.get<RecommendedResponse>(HOME_API.RECOMMENDED);
+
+      return response.data;
     },
-    staleTime: RECOMMENDED_STALE_TIME,
+    staleTime: HOME_QUERY_CONFIG.recommendedStaleTime,
   });
 
   const bestSellerQuery = useInfiniteQuery({
-    queryKey: ['best-seller-resto'],
+    queryKey: HOME_QUERY_KEYS.bestSeller,
     queryFn: async ({ pageParam = 1 }) => {
-      const res = await api.get<RecommendedResponse>('/api/resto/best-seller', {
-        params: {
-          page: pageParam,
-          limit: LIST_LIMIT,
+      const response = await api.get<RecommendedResponse>(
+        HOME_API.BEST_SELLER,
+        {
+          params: {
+            page: pageParam,
+            limit: HOME_QUERY_CONFIG.listLimit,
+          },
         },
-      });
-      return res.data;
+      );
+
+      return response.data;
     },
     enabled: activeList === 'best-seller',
     initialPageParam: 1,
     getNextPageParam,
+    staleTime: HOME_QUERY_CONFIG.listStaleTime,
   });
 
   const allRestaurantsQuery = useInfiniteQuery({
-    queryKey: ['all-restaurants'],
+    queryKey: HOME_QUERY_KEYS.allRestaurants,
     queryFn: async ({ pageParam = 1 }) => {
-      const res = await api.get<RecommendedResponse>('/api/resto', {
-        params: {
-          page: pageParam,
-          limit: LIST_LIMIT,
+      const response = await api.get<RecommendedResponse>(
+        HOME_API.RESTAURANTS,
+        {
+          params: {
+            page: pageParam,
+            limit: HOME_QUERY_CONFIG.listLimit,
+          },
         },
-      });
-      return res.data;
+      );
+
+      return response.data;
     },
     enabled: activeList === 'all-restaurants',
     initialPageParam: 1,
     getNextPageParam,
+    staleTime: HOME_QUERY_CONFIG.listStaleTime,
   });
 
-  const nearbyQuery = useInfiniteQuery({
-    queryKey: ['nearby-resto', NEARBY_RANGE_KM],
-    queryFn: async ({ pageParam = 1 }) => {
-      const res = await api.get<RecommendedResponse>('/api/resto', {
+  const nearbyQuery = useQuery({
+    queryKey: HOME_QUERY_KEYS.nearby(HOME_QUERY_CONFIG.nearbyRangeKm),
+    queryFn: async () => {
+      const response = await api.get<NearbyResponse>(HOME_API.NEARBY, {
         params: {
-          range: NEARBY_RANGE_KM,
-          limit: LIST_LIMIT,
-          page: pageParam,
+          range: HOME_QUERY_CONFIG.nearbyRangeKm,
+          limit: HOME_QUERY_CONFIG.listLimit,
         },
       });
-      return res.data;
+
+      return response.data;
     },
     enabled: activeList === 'nearby',
-    initialPageParam: 1,
-    getNextPageParam,
+    staleTime: HOME_QUERY_CONFIG.listStaleTime,
   });
 
   const searchQuery = useQuery({
-    queryKey: ['search-resto', trimmedDebouncedKeyword],
+    queryKey: HOME_QUERY_KEYS.search(trimmedDebouncedKeyword),
     queryFn: async () => {
-      const res = await api.get<RecommendedResponse>('/api/resto/search', {
+      const response = await api.get<RecommendedResponse>(HOME_API.SEARCH, {
         params: {
           q: trimmedDebouncedKeyword,
           page: 1,
-          limit: LIST_LIMIT,
+          limit: HOME_QUERY_CONFIG.listLimit,
         },
       });
-      return res.data;
+
+      return response.data;
     },
     enabled:
       activeList === 'search' &&
       trimmedDebouncedKeyword.length >= SEARCH_CONFIG.minQueryLength,
+    staleTime: HOME_QUERY_CONFIG.searchStaleTime,
   });
 
   return {
@@ -112,6 +134,6 @@ export function useHomeQueries(activeList: ActiveList, keyword: string) {
     allRestaurantsQuery,
     nearbyQuery,
     searchQuery,
-    nearbyRangeKm: NEARBY_RANGE_KM,
+    nearbyRangeKm: HOME_QUERY_CONFIG.nearbyRangeKm,
   };
 }

@@ -1,7 +1,9 @@
-import { getErrorMessage, isUnauthorizedError } from '@/lib/api-helpers';
-
+import {
+  getErrorMessage,
+  isLocationNotSetError,
+  isUnauthorizedError,
+} from '@/lib/api-helpers';
 import type { ActiveList, RecommendedItem } from '../types';
-
 import { useHomeQueries } from './useHomeQueries';
 
 // Selects the active restaurant data and query state.
@@ -21,17 +23,11 @@ export function useActiveListData(activeList: ActiveList, keyword: string) {
     'all-restaurants': allRestaurantsQuery,
     nearby: nearbyQuery,
     search: searchQuery,
-    discount: recommendedQuery,
-    delivery: recommendedQuery,
-    lunch: recommendedQuery,
   }[activeList];
 
-  const items: RecommendedItem[] = (() => {
+  const items: readonly RecommendedItem[] = (() => {
     switch (activeList) {
       case 'recommended':
-      case 'discount':
-      case 'delivery':
-      case 'lunch':
         return recommendedQuery.data?.data?.recommendations ?? [];
 
       case 'best-seller':
@@ -49,11 +45,7 @@ export function useActiveListData(activeList: ActiveList, keyword: string) {
         );
 
       case 'nearby':
-        return (
-          nearbyQuery.data?.pages.flatMap(
-            (page) => page.data?.restaurants ?? [],
-          ) ?? []
-        );
+        return nearbyQuery.data?.data?.restaurants ?? [];
 
       case 'search':
         return searchQuery.data?.data?.restaurants ?? [];
@@ -63,12 +55,17 @@ export function useActiveListData(activeList: ActiveList, keyword: string) {
     }
   })();
 
+  const isLocationUnavailable =
+    activeList === 'nearby' && isLocationNotSetError(activeQuery.error);
+
   return {
     items,
     isLoading: activeQuery.isLoading,
-    isError: activeQuery.isError,
+    isError:
+      activeQuery.isError && items.length === 0 && !isLocationUnavailable,
     errorMessage: getErrorMessage(activeQuery.error),
     shouldLogin: isUnauthorizedError(activeQuery.error),
+    isLocationUnavailable,
     recommendedQuery,
     bestSellerQuery,
     allRestaurantsQuery,

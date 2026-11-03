@@ -1,28 +1,34 @@
 export type RecommendedItem = {
-  id: number;
-  name: string;
-  star: number;
-  place: string;
-  logo: string;
-  images: string[];
-  category: string;
-  reviewCount: number;
-  isFrequentlyOrdered: boolean;
-  distance?: number
+  readonly id: number;
+  readonly name: string;
+  readonly star: number;
+  readonly place: string;
+  readonly logo: string;
+  readonly images: readonly string[];
+  readonly category: string;
+  readonly reviewCount: number;
+  readonly distance?: number;
 };
 
 export type RecommendedResponse = {
-  success: boolean;
-  message: string;
-  data?: {
-    recommendations?: RecommendedItem[];
-    restaurants?: RecommendedItem[];
-    pagination?: {
-      page?: number;
-      limit?: number;
-      total?: number;
-      totalPages?: number;
+  readonly success: boolean;
+  readonly message: string;
+  readonly data?: {
+    readonly recommendations?: readonly RecommendedItem[];
+    readonly restaurants?: readonly RecommendedItem[];
+    readonly pagination?: {
+      readonly page?: number;
+      readonly limit?: number;
+      readonly total?: number;
+      readonly totalPages?: number;
     };
+  };
+};
+
+export type NearbyResponse = {
+  readonly success: boolean;
+  readonly data?: {
+    readonly restaurants?: readonly RecommendedItem[];
   };
 };
 
@@ -31,13 +37,4 @@ export type ActiveList =
   | 'best-seller'
   | 'all-restaurants'
   | 'nearby'
-  | 'discount'
-  | 'delivery'
-  | 'lunch'
   | 'search';
-
-export const COMING_SOON_LISTS: ActiveList[] = [
-  'discount',
-  'delivery',
-  'lunch',
-];
