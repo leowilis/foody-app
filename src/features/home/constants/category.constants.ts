@@ -1,12 +1,6 @@
 export const CATEGORY_CONFIG = {
   card: {
     minWidthMobile: 132,
-    minWidthSm: 140,
-  },
-
-  spacing: {
-    gap: 12,
-    gapLg: 16,
   },
 
   tilt: {
