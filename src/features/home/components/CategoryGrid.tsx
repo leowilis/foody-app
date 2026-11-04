@@ -12,15 +12,6 @@ interface CategoryGridProps {
 export default function CategoryGrid({ onSelect }: CategoryGridProps) {
   const navigate = useNavigate();
 
-  const handleClick = (key: ActiveList | 'nearby-nav') => {
-    if (key === 'nearby-nav') {
-      onSelect('nearby');
-      return;
-    }
-
-    onSelect(key);
-  };
-
   const handleMouseMove = (event: MouseEvent<HTMLButtonElement>) => {
     const card = event.currentTarget;
     const rect = card.getBoundingClientRect();
@@ -86,7 +77,7 @@ export default function CategoryGrid({ onSelect }: CategoryGridProps) {
           <button
             key={category.key}
             type='button'
-            onClick={() => handleClick(category.key)}
+            onClick={() => onSelect(category.key)}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             aria-label={`Explore ${category.label} category`}
