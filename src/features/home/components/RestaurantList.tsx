@@ -28,7 +28,12 @@ export default function RestaurantList({
   if (isLoading) {
     return (
       <>
-        <div className='col-span-full flex select-none items-center justify-between rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-foody-sm'>
+        <div
+          role='status'
+          aria-live='polite'
+          aria-label='Loading restaurants'
+          className='col-span-full flex items-center justify-between rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-foody-sm'
+        >
           <div className='flex items-center gap-3'>
             <div
               aria-hidden='true'
@@ -45,7 +50,7 @@ export default function RestaurantList({
         </div>
 
         {Array.from({ length: 4 }).map((_, index) => (
-          <RestaurantCardSkeleton key={`restaurant-skeleton-${index}`} />
+          <RestaurantCardSkeleton key={index} />
         ))}
       </>
     );
@@ -53,7 +58,7 @@ export default function RestaurantList({
 
   if (isLocationUnavailable) {
     return (
-      <div className='col-span-full select-none'>
+      <div className='col-span-full'>
         <Alert className='rounded-3xl border border-border bg-surface p-6'>
           <AlertTitle className='text-base font-bold tracking-tight text-text'>
             Location unavailable
@@ -80,7 +85,7 @@ export default function RestaurantList({
 
   if (isError) {
     return (
-      <div className='col-span-full select-none'>
+      <div className='col-span-full'>
         <Alert variant='destructive' className='rounded-3xl p-6'>
           <AlertTitle className='text-base font-bold tracking-tight'>
             Failed to load data.
@@ -108,7 +113,7 @@ export default function RestaurantList({
 
   if (items.length === 0) {
     return (
-      <div className='col-span-full select-none'>
+      <div className='col-span-full'>
         <Alert className='rounded-3xl border border-border bg-surface p-6'>
           <AlertTitle className='text-base font-bold tracking-tight text-text'>
             No restaurants found
@@ -126,7 +131,7 @@ export default function RestaurantList({
     <>
       {items.map((item) => (
         <RestaurantCard
-          key={`restaurant-item-${item.id}`}
+          key={item.id}
           item={item}
           onClick={() => navigate(`/details/${item.id}`)}
         />

@@ -1,8 +1,9 @@
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Displays the loading placeholder for a restaurant card.
 export default function RestaurantCardSkeleton() {
   return (
-    <div className='flex w-full flex-col overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm select-none animate-fadeIn'>
+    <div className='flex w-full select-none flex-col overflow-hidden rounded-[28px] border border-border bg-surface shadow-foody-sm'>
       <Skeleton className='aspect-[4/3] w-full rounded-none' />
       <div className='flex flex-col gap-2 p-4'>
         <Skeleton className='h-5 w-3/4 rounded-md' />
