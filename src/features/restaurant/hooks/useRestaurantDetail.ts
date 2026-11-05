@@ -30,7 +30,13 @@ export function useRestaurantDetail(
         },
       );
 
-      return DetailResponseSchema.parse(response.data);
+      const result = DetailResponseSchema.parse(response.data);
+
+      if (!result.success || !result.data) {
+        throw new Error(result.message || 'Failed to load restaurant details.');
+      }
+
+      return result;
     },
     enabled: Boolean(id),
     placeholderData: (previousData, previousQuery) =>
