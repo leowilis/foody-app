@@ -1,27 +1,21 @@
-import * as React from 'react';
+import { useRef, useState } from 'react';
+import { RESTAURANT_IMAGE_FALLBACKS } from '../constants/restaurant.constants';
 
 interface ImageGalleryProps {
   images: string[];
   name: string;
 }
 
-const FALLBACKS = [
-  '/images/common/details-dummy-1.svg',
-  '/images/common/details-dummy-2.svg',
-  '/images/common/details-dummy-3.svg',
-  '/images/common/details-dummy-4.svg',
-];
-
-// Desktop grid + mobile swipeable carousel for restaurant images.
+// Displays restaurant images in a desktop grid and mobile carousel.
 export default function ImageGallery({ images, name }: ImageGalleryProps) {
-  const [activeIndex, setActiveIndex] = React.useState(0);
-  const carouselRef = React.useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   const heroImages = [
-    images[0] ?? FALLBACKS[0],
-    images[1] ?? FALLBACKS[1],
-    images[2] ?? FALLBACKS[2],
-    images[3] ?? FALLBACKS[3],
+    images[0] ?? RESTAURANT_IMAGE_FALLBACKS[0],
+    images[1] ?? RESTAURANT_IMAGE_FALLBACKS[1],
+    images[2] ?? RESTAURANT_IMAGE_FALLBACKS[2],
+    images[3] ?? RESTAURANT_IMAGE_FALLBACKS[3],
   ];
   const mobileImages = images.length > 0 ? images : [heroImages[0]];
 
@@ -70,7 +64,7 @@ export default function ImageGallery({ images, name }: ImageGalleryProps) {
               key={i}
               src={img}
               alt={`${name} ${i + 1}`}
-              className='h-[260px] w-[90vw] flex-shrink-0 snap-start rounded-3xl object-cover'
+              className='h-[260px] w-[90vw] shrink-0 snap-start rounded-3xl object-cover'
             />
           ))}
         </div>
@@ -81,7 +75,7 @@ export default function ImageGallery({ images, name }: ImageGalleryProps) {
               <span
                 key={i}
                 className={`h-2.5 w-2.5 rounded-full transition-colors ${
-                  i === activeIndex ? 'bg-primary-100' : 'bg-neutral-200'
+                  i === activeIndex ? 'bg-primary-100' : 'bg-text-muted'
                 }`}
               />
             ))}
