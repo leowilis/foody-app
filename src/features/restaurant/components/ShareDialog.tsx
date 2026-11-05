@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -5,22 +6,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import React from 'react';
+import { Button } from '@/components/ui/button';
 
 interface ShareDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   shareUrl: string;
 }
-// Fallback dialog for copying the share link on devices without native share.
+
+// Provides a fallback dialog for copying the restaurant share link.
 export default function ShareDialog({
   open,
   onOpenChange,
   shareUrl,
 }: ShareDialogProps) {
-  const [status, setStatus] = React.useState<'idle' | 'copied' | 'failed'>(
-    'idle',
-  );
+  const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      setStatus('idle');
+    }
+    onOpenChange(nextOpen);
+  };
 
   const handleCopy = async () => {
     try {
@@ -32,35 +39,41 @@ export default function ShareDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='rounded-3xl'>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className='rounded-3xl border-border bg-surface'>
         <DialogHeader>
-          <DialogTitle>Share this restaurant</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className='text-text'>Share this restaurant</DialogTitle>
+
+          <DialogDescription className='text-text-secondary'>
             Copy the link below and send it to a friend.
           </DialogDescription>
         </DialogHeader>
+
         <div className='flex flex-col gap-3'>
-          <div className='break-all rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-800'>
+          <div className='break-all rounded-2xl border border-border bg-surface-subtle px-4 py-3 text-sm text-text'>
             {shareUrl}
           </div>
+
+          <Button
+            type='button'
+            onClick={handleCopy}
+            className='h-10 rounded-pill bg-primary-100 text-[14px] font-bold leading-7 text-primary-foreground -tracking-[0.02em] hover:bg-primary-200'
+          >
+            Copy Link
+          </Button>
+
+          {status === 'copied' && (
+            <p role='status' className='text-sm font-semibold text-success'>
+              Link copied successfully.
+            </p>
+          )}
+
+          {status === 'failed' && (
+            <p role='alert' className='text-sm font-semibold text-error'>
+              Failed to copy link. Please try again.
+            </p>
+          )}
         </div>
-        <button
-          onClick={handleCopy}
-          className='h-10 cursor-pointer rounded-[100px] bg-primary-100 text-[14px] font-bold leading-7 text-white -tracking-[0.02em]'
-        >
-          Copy Link
-        </button>
-        {status === 'copied' && (
-          <p className='text-sm font-semibold text-green-600'>
-            Link copied successfully.
-          </p>
-        )}
-        {status === 'failed' && (
-          <p className='text-sm font-semibold text-red-600'>
-            Failed to copy link. Please try again.
-          </p>
-        )}
       </DialogContent>
     </Dialog>
   );

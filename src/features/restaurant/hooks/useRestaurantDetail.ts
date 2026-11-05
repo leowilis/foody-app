@@ -1,25 +1,40 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { getErrorMessage } from '@/lib/api-helpers';
-import { DetailResponseSchema } from '../schemas/restaurantSchema';
-import type { DetailResponse } from '../schemas/restaurantSchema';
+import {
+  RESTAURANT_API,
+  RESTAURANT_QUERY_KEYS,
+} from '../constants/restaurant.constants';
+import {
+  DetailResponseSchema,
+  type DetailResponse,
+} from '../schemas/restaurantSchema';
 
-/** Fetches restaurant detail with menus and reviews, paginated. */
+// Fetches restaurant detail with menus and reviews using pagination limits.
 export function useRestaurantDetail(
   id: string | undefined,
   menuLimit: number,
   reviewLimit: number,
 ) {
   const query = useQuery({
-    queryKey: ['restaurant-detail', id, menuLimit, reviewLimit],
-    queryFn: async () => {
-      const res = await api.get<DetailResponse>(`/api/resto/${id}`, {
-        params: { limitMenu: menuLimit, limitReview: reviewLimit },
-      });
-      return DetailResponseSchema.parse(res.data);
+    queryKey: [RESTAURANT_QUERY_KEYS.DETAIL, id, menuLimit, reviewLimit],
+    queryFn: async ({ signal }): Promise<DetailResponse> => {
+      const response = await api.get<DetailResponse>(
+        RESTAURANT_API.DETAIL(id),
+        {
+          params: {
+            limitMenu: menuLimit,
+            limitReview: reviewLimit,
+          },
+          signal,
+        },
+      );
+
+      return DetailResponseSchema.parse(response.data);
     },
     enabled: Boolean(id),
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey[1] === id ? previousData : undefined,
   });
 
   return {
