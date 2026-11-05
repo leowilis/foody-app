@@ -11,10 +11,7 @@ interface ReviewSectionProps {
   onShowMore: () => void;
 }
 
-/**
- * Displays the restaurant review section with an average rating summary,
- * review cards, and pagination controls for loading additional reviews.
- */
+// Displays the restaurant review summary, review cards, and pagination controls.
 export default function ReviewSection({
   reviews,
   averageRating,
@@ -30,43 +27,42 @@ export default function ReviewSection({
       aria-labelledby='restaurant-reviews-title'
       className='flex flex-col gap-4'
     >
-      {/* Review section */}
       <h2
         id='restaurant-reviews-title'
-        className='text-[24px] font-extrabold leading-9 md:text-[36px] md:leading-11'
+        className='text-[24px] font-extrabold leading-9 text-text md:text-[36px] md:leading-11'
       >
         Review
       </h2>
 
-      {/* Average rating and total review count */}
+      {/* Show the average rating and total review count. */}
       <div
         className='flex items-center gap-1'
         aria-label={`${averageRating} out of 5 stars from ${totalReviews} reviews`}
       >
         <StarRating rating={averageRating} />
 
-        <span className='text-[14px] text-neutral-500 md:text-[16px]'>
+        <span className='text-[14px] text-text-secondary md:text-[16px]'>
           ({totalReviews} reviews)
         </span>
       </div>
 
-      {/* Customer review cards */}
+      {/* Render customer reviews in a responsive layout. */}
       <div className='flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-x-5 md:gap-y-5'>
         {reviews.map((review) => (
           <ReviewCard key={review.id} review={review} />
         ))}
       </div>
 
+      {/* Load additional reviews when available. */}
       <div className='mb-13 flex w-full items-center justify-center pb-4 md:pb-0'>
-        {/* Load more reviews button */}
         <button
           type='button'
           disabled={isShowMoreDisabled}
           onClick={onShowMore}
-          className={`h-10 w-40 rounded-[100px] text-[14px] font-bold leading-7 ring-1 ring-inset ring-neutral-300 -tracking-[0.02em] ${
+          className={`h-10 w-40 rounded-pill text-[14px] font-bold leading-7 -tracking-[0.02em] ring-1 ring-inset ring-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
             isShowMoreDisabled
-              ? 'cursor-not-allowed text-neutral-400'
-              : 'cursor-pointer text-neutral-950 transition-colors hover:bg-neutral-100'
+              ? 'cursor-not-allowed text-text-muted'
+              : 'cursor-pointer text-text transition-colors hover:bg-surface-subtle'
           }`}
         >
           {!hasMore ? 'No More Data' : isFetching ? 'Loading...' : 'Show More'}

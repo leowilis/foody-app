@@ -1,37 +1,51 @@
 import { Share2 } from 'lucide-react';
+import burgerKingLogo from '@/assets/burger-king-round.svg';
 import FavoriteButton from '@/features/favorites/components/FavoriteButton';
 import StarRating from '@/components/ui/starRating';
-import type { RestaurantDetail } from '../type';
+import type { RestaurantDetail } from '../schemas/restaurantSchema';
 
 interface RestaurantInfoProps {
   detail: RestaurantDetail;
   onShare: () => void;
 }
 
-// Restaurant name, logo, rating, location, category, and share button.
+// Displays restaurant identity, rating, location, category, and sharing action.
 export default function RestaurantInfo({
   detail,
   onShare,
 }: RestaurantInfoProps) {
+  const logo = detail.logo || burgerKingLogo;
+
   return (
     <div className='flex flex-row items-center justify-between'>
-      <div className='flex flex-row gap-2'>
+      <div className='flex min-w-0 flex-row gap-2'>
         <img
-          src={detail.logo || '/assets/burger-king-round.svg'}
+          src={logo}
           alt={detail.name}
-          className='h-22.5 w-22.5 rounded-full object-cover md:h-30 md:w-30'
+          decoding='async'
+          className='h-22.5 w-22.5 shrink-0 rounded-full object-cover md:h-30 md:w-30'
         />
-        <div className='flex flex-col justify-center gap-0.5 md:gap-1'>
-          <h1 className='text-[16px] font-extrabold leading-7.5 text-neutral-950 -tracking-[0.02em] md:text-[32px] md:leading-10.5'>
+
+        <div className='flex min-w-0 flex-col justify-center gap-0.5 md:gap-1'>
+          <h1 className='truncate text-[16px] font-extrabold leading-7.5 text-text -tracking-[0.02em] md:text-[32px] md:leading-10.5'>
             {detail.name}
           </h1>
+
+          {/* Show the restaurant rating. */}
           <StarRating rating={detail.star} />
-          <div className='flex flex-row items-center gap-1.5'>
-            <span className='text-[14px] leading-7 text-neutral-950 -tracking-[0.02em] md:text-[18px] md:leading-8'>
+
+          {/* Show the restaurant location and category. */}
+          <div className='flex min-w-0 flex-row items-center gap-1.5'>
+            <span className='truncate text-[14px] leading-7 text-text -tracking-[0.02em] md:text-[18px] md:leading-8'>
               {detail.place}
             </span>
-            <span className='h-1 w-1 rounded-full bg-neutral-400' />
-            <span className='text-[14px] leading-7 text-neutral-950 -tracking-[0.02em] md:text-[18px] md:leading-8'>
+
+            <span
+              aria-hidden='true'
+              className='h-1 w-1 shrink-0 rounded-full bg-text-muted'
+            />
+
+            <span className='truncate text-[14px] leading-7 text-text -tracking-[0.02em] md:text-[18px] md:leading-8'>
               {detail.category}
             </span>
           </div>
