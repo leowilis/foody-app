@@ -2,14 +2,18 @@ import Autoplay from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight, MapPin, Star } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useReducedMotion } from 'framer-motion';
 import { HERO_CONFIG } from '../constants/hero.constants';
 import type { RecommendedItem } from '../types';
 
 interface HeroVisualProps {
-  slides: RecommendedItem[];
+  readonly slides: readonly RecommendedItem[];
 }
 
+// Renders the featured restaurant carousel used in the hero section.
 export default function HeroVisual({ slides }: HeroVisualProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
       loop: true,
@@ -18,7 +22,10 @@ export default function HeroVisual({ slides }: HeroVisualProps) {
     [
       Autoplay({
         delay: HERO_CONFIG.autoplayDelay,
-        stopOnInteraction: false,
+        stopOnInteraction: true,
+        stopOnMouseEnter: true,
+        stopOnFocusIn: true,
+        playOnInit: false,
       }),
     ],
   );
@@ -31,6 +38,7 @@ export default function HeroVisual({ slides }: HeroVisualProps) {
         .filter((item) => item.images?.length > 0)
         .slice(0, HERO_CONFIG.visual.maxSlides)
         .map((item) => ({
+          id: item.id,
           image: item.images[0],
           name: item.name,
           category: item.category,
@@ -40,26 +48,44 @@ export default function HeroVisual({ slides }: HeroVisualProps) {
     [slides],
   );
 
+  // Respect the user's reduced-motion preference.
   useEffect(() => {
-    if (!emblaApi) {
+    if (!emblaApi) return;
+
+    const autoplay = emblaApi.plugins().autoplay;
+
+    if (shouldReduceMotion !== false) {
+      autoplay?.stop();
       return;
     }
+
+    autoplay?.play();
+  }, [emblaApi, shouldReduceMotion]);
+
+  // Keep the active slide index synchronized with Embla.
+  useEffect(() => {
+    if (!emblaApi) return;
+
     const handleSelect = () => {
       setSelectedIndex(emblaApi.selectedScrollSnap());
     };
+
     handleSelect();
+
     emblaApi.on('select', handleSelect);
+    emblaApi.on('reInit', handleSelect);
 
     return () => {
       emblaApi.off('select', handleSelect);
+      emblaApi.off('reInit', handleSelect);
     };
   }, [emblaApi]);
 
   if (heroSlides.length === 0) {
     return (
       <div className='relative mx-auto w-full max-w-2xl'>
-        <div className='flex aspect-[4/3] items-center justify-center rounded-[40px] bg-neutral-100'>
-          <span className='text-sm font-semibold text-neutral-400'>
+        <div className='flex aspect-[4/3] items-center justify-center rounded-[40px] bg-surface-subtle'>
+          <span className='text-sm font-semibold text-text-muted'>
             Discover delicious food
           </span>
         </div>
@@ -72,17 +98,18 @@ export default function HeroVisual({ slides }: HeroVisualProps) {
   return (
     <div className='relative mx-auto w-full max-w-2xl'>
       {/* Floating rating badge */}
-      <div className='absolute -top-5 right-4 z-20 flex items-center gap-3 rounded-2xl border border-white/70 bg-white/95 px-4 py-3 shadow-[0_12px_35px_rgba(0,0,0,0.1)] backdrop-blur-md sm:right-8'>
-        <span className='flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50'>
+      <div className='absolute -top-5 right-4 z-20 flex items-center gap-3 rounded-2xl border border-border bg-surface/95 px-4 py-3 shadow-foody-md backdrop-blur-md sm:right-8'>
+        <span className='flex h-9 w-9 items-center justify-center rounded-xl bg-primary-100/10'>
           <Star
             aria-hidden='true'
-            className='h-5 w-5 fill-orange-400 text-orange-400'
+            className='h-5 w-5 fill-primary-100 text-primary-100'
           />
         </span>
 
         <div>
-          <p className='text-xs font-extrabold text-neutral-900'>Top Rated</p>
-          <p className='mt-0.5 text-[11px] font-medium text-neutral-400'>
+          <p className='text-xs font-extrabold text-text'>Top Rated</p>
+
+          <p className='mt-0.5 text-[11px] font-medium text-text-muted'>
             {activeSlide.rating.toFixed(1)} rating
           </p>
         </div>
@@ -91,20 +118,18 @@ export default function HeroVisual({ slides }: HeroVisualProps) {
       {/* Food image */}
       <div
         ref={emblaRef}
-        className='overflow-hidden rounded-[40px] shadow-[0_24px_60px_rgba(0,0,0,0.12)]'
+        className='overflow-hidden rounded-[40px] shadow-foody-lg'
       >
         <div className='flex'>
           {heroSlides.map((slide, index) => (
-            <div
-              key={`${slide.image}-${index}`}
-              className='relative min-w-0 flex-[0_0_100%]'
-            >
-              <div className='aspect-[4/3] w-full bg-neutral-100'>
+            <div key={slide.id} className='relative min-w-0 flex-[0_0_100%]'>
+              <div className='aspect-[4/3] w-full bg-surface-subtle'>
                 <img
                   src={slide.image}
-                  alt={slide.name}
+                  alt=''
                   loading={index === 0 ? 'eager' : 'lazy'}
-                  className='h-full w-full object-cover transition-transform duration-700'
+                  fetchPriority={index === 0 ? 'high' : 'auto'}
+                  className='h-full w-full object-cover'
                 />
               </div>
 
@@ -127,15 +152,14 @@ export default function HeroVisual({ slides }: HeroVisualProps) {
 
                   <div className='mt-2 flex items-center gap-2 text-xs font-medium text-white/80'>
                     <MapPin aria-hidden='true' className='h-3.5 w-3.5' />
-
                     <span className='truncate'>{slide.place}</span>
                   </div>
                 </div>
 
-                <div className='flex shrink-0 items-center gap-1 rounded-full bg-white/95 px-3 py-2 text-xs font-extrabold text-neutral-900 shadow-lg backdrop-blur'>
+                <div className='flex shrink-0 items-center gap-1 rounded-pill bg-surface/95 px-3 py-2 text-xs font-extrabold text-text shadow-foody-sm backdrop-blur'>
                   <Star
                     aria-hidden='true'
-                    className='h-3.5 w-3.5 fill-orange-400 text-orange-400'
+                    className='h-3.5 w-3.5 fill-primary-100 text-primary-100'
                   />
                   {slide.rating.toFixed(1)}
                 </div>
@@ -152,7 +176,7 @@ export default function HeroVisual({ slides }: HeroVisualProps) {
           <div className='flex items-center gap-2'>
             {heroSlides.map((slide, index) => (
               <button
-                key={`${slide.name}-${index}`}
+                key={slide.id}
                 type='button'
                 onClick={() => emblaApi?.scrollTo(index)}
                 aria-label={`Go to hero slide ${index + 1}`}
@@ -160,7 +184,7 @@ export default function HeroVisual({ slides }: HeroVisualProps) {
                 className={`h-1.5 rounded-full transition-all duration-300 ${
                   index === selectedIndex
                     ? 'w-8 bg-primary-100'
-                    : 'w-1.5 bg-neutral-300'
+                    : 'w-1.5 bg-border-strong'
                 }`}
               />
             ))}
@@ -172,7 +196,7 @@ export default function HeroVisual({ slides }: HeroVisualProps) {
               type='button'
               onClick={() => emblaApi?.scrollPrev()}
               aria-label='Previous hero slide'
-              className='flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-900 shadow-sm transition-all hover:-translate-x-0.5 hover:border-neutral-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-100'
+              className='flex h-10 w-10 items-center justify-center rounded-pill border border-border bg-surface text-text shadow-foody-sm outline-none transition-all hover:-translate-x-0.5 hover:border-border-strong hover:bg-surface-subtle hover:shadow-foody-md focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
             >
               <ChevronLeft aria-hidden='true' className='h-4 w-4' />
             </button>
@@ -181,7 +205,7 @@ export default function HeroVisual({ slides }: HeroVisualProps) {
               type='button'
               onClick={() => emblaApi?.scrollNext()}
               aria-label='Next hero slide'
-              className='flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-900 shadow-sm transition-all hover:translate-x-0.5 hover:border-neutral-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-100'
+              className='flex h-10 w-10 items-center justify-center rounded-pill border border-border bg-surface text-text shadow-foody-sm outline-none transition-all hover:translate-x-0.5 hover:border-border-strong hover:bg-surface-subtle hover:shadow-foody-md focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
             >
               <ChevronRight aria-hidden='true' className='h-4 w-4' />
             </button>

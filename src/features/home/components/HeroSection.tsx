@@ -6,9 +6,10 @@ import HeroContent from './HeroContent';
 import HeroVisual from './HeroVisual';
 
 interface HeroSectionProps {
-  slides: RecommendedItem[];
+  readonly slides: readonly RecommendedItem[];
 }
 
+// Renders the hero section with the main discovery call to action.
 export default function HeroSection({ slides }: HeroSectionProps) {
   const handleExplore = () => {
     document.getElementById('restaurant-discovery')?.scrollIntoView({
@@ -20,9 +21,8 @@ export default function HeroSection({ slides }: HeroSectionProps) {
   return (
     <section
       aria-labelledby='hero-title'
-      className='relative overflow-hidden bg-[#fffaf6]'
+      className='relative overflow-hidden bg-background'
     >
-      {/* Decorative background shapes */}
       <div
         aria-hidden='true'
         className='pointer-events-none absolute -left-40 bottom-0 h-80 w-80 rounded-full bg-primary-100/10 blur-3xl'
@@ -30,7 +30,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
 
       <div
         aria-hidden='true'
-        className='pointer-events-none absolute -right-32 top-20 h-[420px] w-[420px] rounded-full bg-orange-100/40 blur-3xl'
+        className='pointer-events-none absolute -right-32 top-20 h-[420px] w-[420px] rounded-full bg-primary-100/5 blur-3xl'
       />
 
       <PageContainer className='relative z-10 flex min-h-[620px] items-center py-14 sm:py-16 lg:min-h-[620px] lg:py-20'>
@@ -40,8 +40,8 @@ export default function HeroSection({ slides }: HeroSectionProps) {
           <motion.div
             initial={{
               opacity: 0,
-              scale: 0.96,
-              x: 20,
+              scale: HERO_CONFIG.animation.initialScale,
+              x: HERO_CONFIG.animation.initialX,
             }}
             animate={{
               opacity: 1,
@@ -50,7 +50,7 @@ export default function HeroSection({ slides }: HeroSectionProps) {
             }}
             transition={{
               duration: HERO_CONFIG.animation.duration,
-              delay: HERO_CONFIG.animation.stagger,
+              delay: HERO_CONFIG.animation.delay,
               ease: HERO_CONFIG.animation.ease,
             }}
           >
