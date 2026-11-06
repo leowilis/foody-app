@@ -1,8 +1,8 @@
-import { cn } from 'cn';
-import type { HTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 interface PageContainerProps extends HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function PageContainer({
