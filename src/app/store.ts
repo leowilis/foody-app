@@ -1,18 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import cartReducer from '@/features/cart/cartSlice'
-import categoryFilterReducer from '@/features/filters/categoryFilterSlice'
-import searchReducer from '@/features/search/searchSlice'
+import cartReducer from '@/features/cart/cartSlice';
+import searchReducer from '@/features/search/searchSlice';
 
-/**
- * Central application Redux store initialization.
- *
- * Configures the global state management engine, combining domain-specific
- * slices and auto-injecting production middleware (like Redux Thunk).
- */
+// Central application Redux store for client-side application state.
 export const store = configureStore({
   reducer: {
     cart: cartReducer,
-    categoryFilter: categoryFilterReducer,
     search: searchReducer,
   },
 });

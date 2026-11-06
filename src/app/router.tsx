@@ -1,19 +1,21 @@
 import { createBrowserRouter } from 'react-router-dom';
-import AuthPage from '@/features/auth/AuthPage';
-import HomePage from '@/features/home/HomePage';
+import LazyWrapper from '@/components/layout/LazyWrapper';
 import ProtectedRoute from '@/components/layout/ProtectedRoute';
 import RootLayout from '@/components/layout/RootLayout';
-import LazyWrapper from '@/components/layout/LazyWrapper';
-
-// Clean centralized lazy route imports!
+import AuthPage from '@/features/auth/AuthPage';
+import HomePage from '@/features/home/HomePage';
 import {
-  DetailsPage,
+  CategoryPage,
   CheckoutPage,
-  SuccessPage,
-  MyCartPage,
+  DetailsPage,
   FavoritesPage,
+  MyCartPage,
+  MyOrdersPage,
+  SuccessPage,
 } from './lazyRoutes';
+import MyOrdersFallback from '@/features/order/components/MyOrdersFallback';
 
+// Defines public and authenticated application routes.
 export const router = createBrowserRouter([
   {
     path: '/auth',
@@ -21,12 +23,31 @@ export const router = createBrowserRouter([
   },
   {
     path: '/',
-    element: <ProtectedRoute />,
+    element: <RootLayout />,
     children: [
       {
-        element: <RootLayout />,
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: 'category',
+        element: (
+          <LazyWrapper>
+            <CategoryPage />
+          </LazyWrapper>
+        ),
+      },
+      {
+        path: 'details/:id',
+        element: (
+          <LazyWrapper>
+            <DetailsPage />
+          </LazyWrapper>
+        ),
+      },
+      {
+        element: <ProtectedRoute />,
         children: [
-          { index: true, element: <HomePage /> },
           {
             path: 'mycart',
             element: (
@@ -44,10 +65,10 @@ export const router = createBrowserRouter([
             ),
           },
           {
-            path: 'details/:id',
+            path: 'myorders',
             element: (
-              <LazyWrapper>
-                <DetailsPage />
+              <LazyWrapper fallback={<MyOrdersFallback />}>
+                <MyOrdersPage />
               </LazyWrapper>
             ),
           },
