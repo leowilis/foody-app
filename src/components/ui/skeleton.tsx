@@ -7,11 +7,13 @@ interface SkeletonProps extends React.ComponentProps<'div'> {
 function Skeleton({
   className,
   variant = 'rectangular',
+  'aria-hidden': ariaHidden,
   ...props
 }: SkeletonProps) {
   return (
     <div
       data-slot='skeleton'
+      aria-hidden={ariaHidden ?? true}
       className={cn(
         'animate-pulse bg-muted',
         variant === 'circle' && 'aspect-square rounded-full',
