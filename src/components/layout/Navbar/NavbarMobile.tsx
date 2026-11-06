@@ -29,7 +29,12 @@ export default function NavbarMobile({ navbar }: NavbarMobileProps) {
         aria-label='Foody homepage'
         className='rounded-lg outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary-100'
       >
-        <img src={Logo} alt='Foody' className='h-9 w-9 object-contain' />
+        <img
+          src={Logo}
+          alt=''
+          aria-hidden='true'
+          className='h-9 w-9 object-contain'
+        />
       </button>
 
       {/* Actions */}

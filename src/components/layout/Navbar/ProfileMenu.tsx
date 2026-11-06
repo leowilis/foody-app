@@ -96,7 +96,10 @@ export default function ProfileMenu({
             className='cursor-pointer gap-3 rounded-xl px-2 py-2 outline-none hover:bg-surface-subtle focus:bg-surface-subtle'
             onClick={() => navigate('/myorders')}
           >
-            <IoDocumentTextOutline className='shrink-0 text-xl text-text-secondary' />
+            <IoDocumentTextOutline
+              aria-hidden='true'
+              className='shrink-0 text-xl text-text-secondary'
+            />
 
             <span className='text-sm font-medium text-text'>My Orders</span>
           </DropdownMenuItem>
@@ -105,7 +108,10 @@ export default function ProfileMenu({
             className='cursor-pointer gap-3 rounded-xl px-2 py-2 text-primary-100 outline-none hover:bg-primary-100/10 focus:bg-primary-100/10 focus:text-primary-100'
             onClick={onLogout}
           >
-            <RiLogoutCircleLine className='shrink-0 text-xl' />
+            <RiLogoutCircleLine
+              aria-hidden='true'
+              className='shrink-0 text-xl'
+            />
 
             <span className='text-sm font-bold'>Logout</span>
           </DropdownMenuItem>
