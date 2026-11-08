@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import type { RootState } from '@/app/store';
+import { CartApiResponseSchema } from '../schemas/cartSchema';
 import {
   removeItem,
   setCartItemId,
@@ -36,7 +37,7 @@ export function useAddCartMutation() {
         quantity: payload.quantity,
       });
 
-      return response.data;
+      return CartApiResponseSchema.parse(response.data);
     },
 
     onMutate: async (payload) => {
@@ -99,11 +100,12 @@ export function useAddCartMutation() {
         );
       }
 
-      queryClient.invalidateQueries({
-        queryKey: CART_QUERY_KEY,
-      });
-
       toast.success(CART_MESSAGES.ADD_SUCCESS);
     },
+
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: CART_QUERY_KEY,
+      }),
   });
 }

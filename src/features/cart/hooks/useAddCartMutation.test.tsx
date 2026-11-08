@@ -181,4 +181,29 @@ describe('useAddCartMutation', () => {
       expect(store.getState().cart.items[0]).toEqual(existingItem);
     });
   });
+
+  it('rolls back the optimistic update when the API returns an unsuccessful response', async () => {
+    vi.mocked(api.post).mockResolvedValue({
+      data: {
+        success: false,
+        message: 'Unable to add item to cart',
+      },
+    } as never);
+
+    const store = createStore();
+    const wrapper = createWrapper(store);
+
+    const { result } = renderHook(() => useAddCartMutation(), {
+      wrapper,
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync(payload).catch(() => undefined);
+    });
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+      expect(store.getState().cart.items).toHaveLength(0);
+    });
+  });
 });

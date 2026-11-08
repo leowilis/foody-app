@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import { toast } from 'sonner';
-import { store } from '@/app/store';
 import { api } from '@/lib/api';
 import { setCartItemId, updateQuantity } from '../cartSlice';
 import {
@@ -10,18 +9,21 @@ import {
   CART_MUTATION_KEYS,
   CART_QUERY_KEY,
 } from '../constants/cart.constants';
+import { CartApiResponseSchema } from '../schemas/cartSchema';
 import type {
   CartResponse,
   UpdateCartPayload,
   UpdateCartResponse,
 } from '../types';
 import { updateCartCache } from '../utils/cart.utils';
+import type { RootState } from '@/app/store';
 
 /**
  * Updates a cart item's quantity and keeps local state
  * synchronized with the server response.
  */
 export function useUpdateCartMutation() {
+  const store = useStore<RootState>();
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
 
@@ -31,14 +33,14 @@ export function useUpdateCartMutation() {
     mutationFn: async (
       payload: UpdateCartPayload,
     ): Promise<UpdateCartResponse> => {
-      const response = await api.put<UpdateCartResponse>(
+      const response = await api.put<unknown>(
         CART_API.ITEM(payload.cartItemId),
         {
           quantity: payload.quantity,
         },
       );
 
-      return response.data;
+      return CartApiResponseSchema.parse(response.data);
     },
 
     onMutate: async (payload) => {

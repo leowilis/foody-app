@@ -27,9 +27,10 @@ const cartSlice = createSlice({
           ...action.payload,
           cartItemId: action.payload.cartItemId ?? existing.cartItemId,
         });
-      } else {
-        state.items.push(action.payload);
+        return;
       }
+
+      state.items.push(action.payload);
     },
 
     updateQuantity(
@@ -64,6 +65,25 @@ const cartSlice = createSlice({
       );
     },
 
+    restoreItem(
+      state,
+      action: PayloadAction<{ item: CartItem; index: number }>,
+    ) {
+      const { item, index } = action.payload;
+
+      const existingIndex = state.items.findIndex(
+        (current) => current.menuId === item.menuId,
+      );
+
+      if (existingIndex !== -1) {
+        state.items.splice(existingIndex, 1);
+      }
+
+      const safeIndex = Math.max(0, Math.min(index, state.items.length));
+
+      state.items.splice(safeIndex, 0, item);
+    },
+
     clearCart(state) {
       state.items = [];
     },
@@ -76,6 +96,7 @@ export const {
   updateQuantity,
   setCartItemId,
   removeItem,
+  restoreItem,
   clearCart,
 } = cartSlice.actions;
 

@@ -6,9 +6,14 @@ export const CartItemResponseSchema = z.object({
 });
 
 export const CartApiResponseSchema = z.object({
-  data: z
-    .object({
-      cartItem: CartItemResponseSchema,
-    })
-    .optional(),
+  success: z.literal(true),
+  message: z.string().optional(),
+  data: z.object({
+    cartItem: CartItemResponseSchema,
+  }),
+});
+
+export const CartMutationSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  message: z.string().optional(),
 });

@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import type { RootState } from '@/app/store';
 import { api } from '@/lib/api';
-import { removeItem, upsertItem } from '../cartSlice';
+import { removeItem, restoreItem } from '../cartSlice';
+import { CartMutationSuccessResponseSchema } from '../schemas/cartSchema';
 import {
   CART_API,
   CART_MESSAGES,
@@ -27,6 +28,7 @@ type DeleteCartContext = {
   cachedItem: CartGroupItem | undefined;
   cachedRestaurant: CartRestaurant['restaurant'] | undefined;
   cachedItemIndex: number;
+  previousItemIndex: number;
 };
 
 export function useDeleteCartMutation() {
@@ -43,11 +45,11 @@ export function useDeleteCartMutation() {
     mutationKey: CART_MUTATION_KEYS.DELETE,
 
     mutationFn: async (payload) => {
-      const response = await api.delete<DeleteCartResponse>(
+      const response = await api.delete<unknown>(
         CART_API.ITEM(payload.cartItemId),
       );
 
-      return response.data;
+      return CartMutationSuccessResponseSchema.parse(response.data);
     },
 
     onMutate: async (payload) => {
@@ -61,6 +63,10 @@ export function useDeleteCartMutation() {
 
       const previousCart =
         queryClient.getQueryData<CartResponse>(CART_QUERY_KEY);
+
+      const previousItemIndex = cartItems.findIndex(
+        (item) => item.menuId === payload.menuId,
+      );
 
       let cachedItem: CartGroupItem | undefined;
       let cachedRestaurant: CartRestaurant['restaurant'] | undefined;
@@ -89,6 +95,7 @@ export function useDeleteCartMutation() {
 
       return {
         previousItem,
+        previousItemIndex,
         cachedItem,
         cachedRestaurant,
         cachedItemIndex,
@@ -99,7 +106,12 @@ export function useDeleteCartMutation() {
       if (!context) return;
 
       if (context.previousItem) {
-        dispatch(upsertItem(context.previousItem));
+        dispatch(
+          restoreItem({
+            item: context.previousItem,
+            index: context.previousItemIndex,
+          }),
+        );
       }
 
       const { cachedItem, cachedRestaurant, cachedItemIndex } = context;

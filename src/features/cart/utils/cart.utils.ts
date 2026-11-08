@@ -121,6 +121,10 @@ export function removeCartItemFromCache(
       return {
         ...group,
         items,
+        subtotal: items.reduce(
+          (total, item) => total + item.menu.price * item.quantity,
+          0,
+        ),
       };
     })
     .filter((group) => group.items.length > 0);
