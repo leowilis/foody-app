@@ -38,10 +38,11 @@ const parseDiscoveryNumber = (
 // Manages discovery filters and pagination through URL search params.
 export function useDiscoveryFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const location = searchParams.get('location')?.trim();
-  const category = searchParams.get('category')?.trim();
 
   const filters = useMemo<RestaurantDiscoveryFilters>(() => {
+    const location = searchParams.get('location')?.trim();
+    const category = searchParams.get('category')?.trim();
+
     const priceMin = parseDiscoveryNumber(searchParams.get('priceMin'), {
       min: 0,
       integer: true,

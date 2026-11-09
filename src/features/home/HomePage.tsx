@@ -81,7 +81,7 @@ export default function HomePage() {
     <div className='w-full overflow-x-hidden bg-background antialiased'>
       <HeroSection slides={slides} />
 
-      <main
+      <section
         id='restaurant-discovery'
         className='relative z-20 mx-auto flex w-full max-w-[1600px] flex-col px-6 py-4 md:px-12 lg:px-16'
       >
@@ -131,7 +131,7 @@ export default function HomePage() {
             }}
           />
         </div>
-      </main>
+      </section>
     </div>
   );
 }

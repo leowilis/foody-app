@@ -4,7 +4,7 @@ import categoryNearby from '@/assets/category-nearby.svg';
 import type { ActiveList } from '../types';
 
 export interface CategoryItem {
-  readonly key: ActiveList | 'nearby-nav';
+  readonly key: ActiveList;
   readonly label: string;
   readonly icon: string;
 }
@@ -16,7 +16,7 @@ export const CATEGORIES: readonly CategoryItem[] = [
     icon: categoryAll,
   },
   {
-    key: 'nearby-nav',
+    key: 'nearby',
     label: 'Nearby',
     icon: categoryNearby,
   },

@@ -6,30 +6,24 @@ import {
 } from '@/features/home/constants/home.constants';
 import { SEARCH_CONFIG } from '@/features/search/search.constants';
 import { api } from '@/lib/api';
-import type { ActiveList, NearbyResponse, RecommendedResponse } from '../types';
+import type {
+  ActiveList,
+  NearbyResponse,
+  RecommendedResponse,
+  SearchResponse,
+} from '../types';
 import { useDebouncedValue } from './useDebouncedValue';
 
 const getNextPageParam = (
   lastPage: RecommendedResponse,
-  allPages: RecommendedResponse[],
 ): number | undefined => {
   const pagination = lastPage.data?.pagination;
 
-  if (pagination) {
-    if (pagination.page === undefined || pagination.totalPages === undefined) {
-      return undefined;
-    }
+  if (!pagination) return undefined;
 
-    return pagination.page < pagination.totalPages
-      ? pagination.page + 1
-      : undefined;
-  }
-
-  const restaurantCount = lastPage.data?.restaurants?.length ?? 0;
-
-  return restaurantCount < HOME_QUERY_CONFIG.listLimit
-    ? undefined
-    : allPages.length + 1;
+  return pagination.page < pagination.totalPages
+    ? pagination.page + 1
+    : undefined;
 };
 
 // Provides restaurant queries for the home page.
@@ -43,8 +37,11 @@ export function useHomeQueries(activeList: ActiveList, keyword: string) {
 
   const recommendedQuery = useQuery({
     queryKey: HOME_QUERY_KEYS.recommended,
-    queryFn: async () => {
-      const response = await api.get<RecommendedResponse>(HOME_API.RECOMMENDED);
+    queryFn: async ({ signal }) => {
+      const response = await api.get<RecommendedResponse>(
+        HOME_API.RECOMMENDED,
+        { signal },
+      );
 
       return response.data;
     },
@@ -53,7 +50,7 @@ export function useHomeQueries(activeList: ActiveList, keyword: string) {
 
   const bestSellerQuery = useInfiniteQuery({
     queryKey: HOME_QUERY_KEYS.bestSeller,
-    queryFn: async ({ pageParam = 1 }) => {
+    queryFn: async ({ pageParam = 1, signal }) => {
       const response = await api.get<RecommendedResponse>(
         HOME_API.BEST_SELLER,
         {
@@ -61,6 +58,7 @@ export function useHomeQueries(activeList: ActiveList, keyword: string) {
             page: pageParam,
             limit: HOME_QUERY_CONFIG.listLimit,
           },
+          signal,
         },
       );
 
@@ -74,7 +72,7 @@ export function useHomeQueries(activeList: ActiveList, keyword: string) {
 
   const allRestaurantsQuery = useInfiniteQuery({
     queryKey: HOME_QUERY_KEYS.allRestaurants,
-    queryFn: async ({ pageParam = 1 }) => {
+    queryFn: async ({ pageParam = 1, signal }) => {
       const response = await api.get<RecommendedResponse>(
         HOME_API.RESTAURANTS,
         {
@@ -82,6 +80,7 @@ export function useHomeQueries(activeList: ActiveList, keyword: string) {
             page: pageParam,
             limit: HOME_QUERY_CONFIG.listLimit,
           },
+          signal,
         },
       );
 
@@ -95,12 +94,13 @@ export function useHomeQueries(activeList: ActiveList, keyword: string) {
 
   const nearbyQuery = useQuery({
     queryKey: HOME_QUERY_KEYS.nearby(HOME_QUERY_CONFIG.nearbyRangeKm),
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const response = await api.get<NearbyResponse>(HOME_API.NEARBY, {
         params: {
           range: HOME_QUERY_CONFIG.nearbyRangeKm,
           limit: HOME_QUERY_CONFIG.listLimit,
         },
+        signal,
       });
 
       return response.data;
@@ -111,13 +111,14 @@ export function useHomeQueries(activeList: ActiveList, keyword: string) {
 
   const searchQuery = useQuery({
     queryKey: HOME_QUERY_KEYS.search(trimmedDebouncedKeyword),
-    queryFn: async () => {
-      const response = await api.get<RecommendedResponse>(HOME_API.SEARCH, {
+    queryFn: async ({ signal }) => {
+      const response = await api.get<SearchResponse>(HOME_API.SEARCH, {
         params: {
           q: trimmedDebouncedKeyword,
           page: 1,
           limit: HOME_QUERY_CONFIG.listLimit,
         },
+        signal,
       });
 
       return response.data;

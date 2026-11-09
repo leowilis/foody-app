@@ -3,19 +3,20 @@ export const HERO_CONFIG = {
 
   animation: {
     duration: 0.7,
-    stagger: 0.08,
+    delay: 0.08,
+    initialY: 24,
+    initialX: 20,
+    initialScale: 0.96,
     ease: [0.22, 1, 0.36, 1] as const,
   },
 
   visual: {
     maxSlides: 5,
-    imageAspectRatio: '4/3',
   },
 } as const;
 
 export const HERO_CONTENT = {
   eyebrow: 'DISCOVER GOOD FOOD',
-  title: 'Your next favorite meal is waiting.',
   description:
     'Find great restaurants, discover delicious food, and enjoy every bite.',
   cta: 'Explore restaurants',
