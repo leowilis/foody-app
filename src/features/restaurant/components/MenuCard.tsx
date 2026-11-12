@@ -3,7 +3,7 @@ import type { CartHandlers } from '@/features/cart/hooks/useCartHandlers';
 import type { CartItem } from '@/features/cart/types';
 import { Button } from '@/components/ui/button';
 import { formatRupiah } from '@/lib/format';
-import detailsPlaceholder from '@/assets/details-dummy-1.svg';
+import detailsPlaceholder from '@/assets/details-dummy-1.webp';
 import minusIcon from '@/assets/minus.svg';
 import plusIcon from '@/assets/plus.svg';
 

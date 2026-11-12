@@ -2,7 +2,7 @@ import { formatRupiah } from '@/lib/format';
 import type { CartGroupItem } from '../types';
 import minusIcon from '@/assets/minus.svg';
 import plusIcon from '@/assets/plus.svg';
-import foodPlaceholder from '@/assets/details-dummy-1.svg';
+import foodPlaceholder from '@/assets/details-dummy-1.webp';
 
 interface CartItemRowProps {
   item: CartGroupItem;

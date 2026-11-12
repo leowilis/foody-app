@@ -1,7 +1,7 @@
-import detailsDummy1 from '@/assets/details-dummy-1.svg';
-import detailsDummy2 from '@/assets/details-dummy-2.svg';
-import detailsDummy3 from '@/assets/details-dummy-3.svg';
-import detailsDummy4 from '@/assets/details-dummy-4.svg';
+import detailsDummy1 from '@/assets/details-dummy-1.webp';
+import detailsDummy2 from '@/assets/details-dummy-2.webp';
+import detailsDummy3 from '@/assets/details-dummy-3.webp';
+import detailsDummy4 from '@/assets/details-dummy-4.webp';
 
 export const RESTAURANT_API = {
   DETAIL: (restaurantId: string | undefined) =>

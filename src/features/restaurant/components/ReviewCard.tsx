@@ -1,6 +1,7 @@
 import StarRating from '@/components/ui/starRating';
 import { formatDate } from '@/lib/format';
 import type { ReviewItem } from '../schemas/restaurantSchema';
+import profileDummy from '@/assets/profile-dummy.webp';
 
 interface ReviewCardProps {
   review: ReviewItem;
@@ -8,7 +9,7 @@ interface ReviewCardProps {
 
 // Displays a review with its author, date, rating, and comment.
 export default function ReviewCard({ review }: ReviewCardProps) {
-  const avatar = review.user.avatar || '/images/common/profile-dummy.svg';
+  const avatar = review.user.avatar || profileDummy;
 
   return (
     <article className='flex flex-col gap-4 rounded-3xl border border-border bg-surface px-4 py-4 shadow-foody-md'>

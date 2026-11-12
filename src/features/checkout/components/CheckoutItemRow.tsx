@@ -1,4 +1,4 @@
-import foodPlaceholder from '@/assets/details-dummy-1.svg';
+import foodPlaceholder from '@/assets/details-dummy-1.webp';
 import minusIcon from '@/assets/minus.svg';
 import plusIcon from '@/assets/plus.svg';
 import { formatRupiah } from '@/lib/format';

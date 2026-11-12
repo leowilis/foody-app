@@ -1,6 +1,6 @@
-import categoryAll from '@/assets/category-all.svg';
-import categoryBestSeller from '@/assets/category-best-seller.svg';
-import categoryNearby from '@/assets/category-nearby.svg';
+import categoryAll from '@/assets/category-all.webp';
+import categoryBestSeller from '@/assets/category-best-seller.webp';
+import categoryNearby from '@/assets/category-nearby.webp';
 import type { ActiveList } from '../types';
 
 export interface CategoryItem {

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import type { CartHandlers } from '@/features/cart/hooks/useCartHandlers';
 import type { CheckoutCartGroup } from '../types';
 import CheckoutItemRow from './CheckoutItemRow';
-import restaurantPlaceholder from '@/assets/icon-restaurant-dummy.svg';
+import restaurantPlaceholder from '@/assets/icon-restaurant-dummy.webp';
 
 interface CheckoutGroupProps {
   group: CheckoutCartGroup;

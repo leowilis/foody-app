@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 import { CART_API, CART_QUERY_KEY } from '../constants/cart.constants';
 import type { CartResponse, CartRestaurant } from '../types';
 import { useIsAuthenticated } from '@/features/auth/hooks/useIsAuthenticated';
-import restaurantPlaceholder from '@/assets/icon-restaurant-dummy.svg';
+import restaurantPlaceholder from '@/assets/icon-restaurant-dummy.webp';
 
 /**
  * Fetches the authenticated user's cart and keeps Redux

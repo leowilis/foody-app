@@ -1,6 +1,7 @@
 import { MapPin, Star } from 'lucide-react';
 import { useState } from 'react';
-import restaurantDummy from '@/assets/restaurant-dummy.svg';
+import restaurantDummy from '@/assets/restaurant-dummy.webp';
+import { getOptimizedImageUrl } from '@/lib/image-url';
 
 export interface RestaurantCardItem {
   readonly id: number;
@@ -36,7 +37,11 @@ export default function RestaurantCard(props: RestaurantCardProps) {
 }
 
 function RestaurantCardContent({ item, onClick }: RestaurantCardContentProps) {
-  const imageCandidates = [item.images[0], item.logo, restaurantDummy].filter(
+  const imageCandidates = [
+    getOptimizedImageUrl(item.images[0] ?? ''),
+    getOptimizedImageUrl(item.logo),
+    restaurantDummy,
+  ].filter(
     (source, index, sources): source is string =>
       Boolean(source) && sources.indexOf(source) === index,
   );

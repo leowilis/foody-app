@@ -1,5 +1,5 @@
 import { formatRupiah } from '@/lib/format';
-import restaurantPlaceholder from '@/assets/icon-restaurant-dummy.svg';
+import restaurantPlaceholder from '@/assets/icon-restaurant-dummy.webp';
 import {
   ORDER_STATUS_LABELS,
   ORDER_STATUS_STYLES,

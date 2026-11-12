@@ -4,7 +4,7 @@ import { formatRupiah } from '@/lib/format';
 import type { CartHandlers } from '../hooks/useCartHandlers';
 import type { CartRestaurant } from '../types';
 import CartItemRow from './CartItemRow';
-import restaurantPlaceholder from '@/assets/icon-restaurant-dummy.svg';
+import restaurantPlaceholder from '@/assets/icon-restaurant-dummy.webp';
 import chevronRightIcon from '@/assets/chevron-right.svg';
 
 interface CartGroupItemProps {
