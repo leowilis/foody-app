@@ -3,6 +3,19 @@ import { useState } from 'react';
 import restaurantDummy from '@/assets/restaurant-dummy.webp';
 import { getOptimizedImageUrl } from '@/lib/image-url';
 
+const RESTAURANT_IMAGE_WIDTHS = [320, 480, 640, 800] as const;
+const RESTAURANT_IMAGE_SIZES = [
+  '(min-width: 1600px) 350px',
+  '(min-width: 1024px) calc((100vw - 200px) / 4)',
+  '(min-width: 768px) calc((100vw - 128px) / 3)',
+  '(min-width: 640px) calc((100vw - 64px) / 2)',
+  'calc(100vw - 48px)',
+].join(', ');
+
+interface ResponsiveImageCandidate {
+  readonly src: string;
+  readonly srcSet?: string;
+}
 export interface RestaurantCardItem {
   readonly id: number;
   readonly name: string;
@@ -23,6 +36,33 @@ interface RestaurantCardContentProps extends RestaurantCardProps {
   readonly imageKey: string;
 }
 
+function createResponsiveImageCandidate(
+  source: string,
+): ResponsiveImageCandidate {
+  const candidates = RESTAURANT_IMAGE_WIDTHS.map((width) => ({
+    src: getOptimizedImageUrl(source, width),
+    width,
+  }));
+
+  const uniqueCandidates = [
+    ...new Map(
+      candidates.map((candidate) => [candidate.src, candidate]),
+    ).values(),
+  ];
+
+  const src = getOptimizedImageUrl(source);
+
+  return {
+    src,
+    srcSet:
+      uniqueCandidates.length > 1
+        ? uniqueCandidates
+            .map(({ src: url, width }) => `${url} ${width}w`)
+            .join(', ')
+        : undefined,
+  };
+}
+
 // Displays a restaurant card with its image, rating, category, and location.
 export default function RestaurantCard(props: RestaurantCardProps) {
   const imageKey = [
@@ -38,12 +78,13 @@ export default function RestaurantCard(props: RestaurantCardProps) {
 
 function RestaurantCardContent({ item, onClick }: RestaurantCardContentProps) {
   const imageCandidates = [
-    getOptimizedImageUrl(item.images[0] ?? ''),
-    getOptimizedImageUrl(item.logo),
-    restaurantDummy,
+    createResponsiveImageCandidate(item.images[0] ?? ''),
+    createResponsiveImageCandidate(item.logo),
+    createResponsiveImageCandidate(restaurantDummy),
   ].filter(
-    (source, index, sources): source is string =>
-      Boolean(source) && sources.indexOf(source) === index,
+    (candidate, index, candidates) =>
+      Boolean(candidate.src) &&
+      candidates.findIndex((item) => item.src === candidate.src) === index,
   );
 
   const [failedImages, setFailedImages] = useState<ReadonlySet<string>>(
@@ -51,17 +92,17 @@ function RestaurantCardContent({ item, onClick }: RestaurantCardContentProps) {
   );
 
   const image =
-    imageCandidates.find((source) => !failedImages.has(source)) ??
-    restaurantDummy;
+    imageCandidates.find((candidate) => !failedImages.has(candidate.src)) ??
+    createResponsiveImageCandidate(restaurantDummy);
 
   const handleImageError = () => {
     setFailedImages((previous) => {
-      if (previous.has(image)) {
+      if (previous.has(image.src)) {
         return previous;
       }
 
       const next = new Set(previous);
-      next.add(image);
+      next.add(image.src);
 
       return next;
     });
@@ -78,7 +119,9 @@ function RestaurantCardContent({ item, onClick }: RestaurantCardContentProps) {
     >
       <span className='relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-surface-subtle'>
         <img
-          src={image}
+          src={image.src}
+          srcSet={image.srcSet}
+          sizes={RESTAURANT_IMAGE_SIZES}
           alt=''
           loading='lazy'
           onError={handleImageError}
