@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import { HERO_CONFIG, HERO_CONTENT } from '../constants/hero.constants';
+import { HERO_CONTENT } from '../constants/hero.constants';
 
 interface HeroContentProps {
   onExplore: () => void;
@@ -9,21 +8,7 @@ interface HeroContentProps {
 // Renders the hero copy and primary discovery action.
 export default function HeroContent({ onExplore }: HeroContentProps) {
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        y: HERO_CONFIG.animation.initialY,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
-      transition={{
-        duration: HERO_CONFIG.animation.duration,
-        ease: HERO_CONFIG.animation.ease,
-      }}
-      className='relative z-10 flex max-w-2xl flex-col items-start'
-    >
+    <div className='hero-enter-content relative z-10 flex max-w-2xl flex-col items-start'>
       <div className='mb-6 inline-flex items-center gap-2 rounded-pill border border-primary-100/10 bg-primary-100/5 px-4 py-2'>
         <span className='flex h-6 w-6 items-center justify-center rounded-pill bg-primary-100/10'>
           <Sparkles
@@ -63,6 +48,6 @@ export default function HeroContent({ onExplore }: HeroContentProps) {
           <ArrowRight aria-hidden='true' className='h-4 w-4' />
         </span>
       </button>
-    </motion.div>
+    </div>
   );
 }
