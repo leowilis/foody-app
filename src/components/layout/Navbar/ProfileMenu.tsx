@@ -1,8 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { Heart } from 'lucide-react';
-import { IoDocumentTextOutline } from 'react-icons/io5';
-import { RiLogoutCircleLine } from 'react-icons/ri';
-import ProfileDummy from '@/assets/profile-dummy.svg';
+import { ClipboardList, Heart, LogOut, UserRound } from 'lucide-react';
+import ProfileDummy from '@/assets/profile-dummy-128.webp';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,11 +35,7 @@ export default function ProfileMenu({
           className='group flex cursor-pointer flex-row items-center gap-4 border-0 bg-transparent p-0 text-left outline-none focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
         >
           <Avatar className='h-10 w-10 transition-transform active:scale-95 md:h-12 md:w-12'>
-            <AvatarImage
-              src={avatarSrc}
-              alt={profileName}
-              className='object-cover'
-            />
+            <AvatarImage src={avatarSrc} alt='' className='object-cover' />
 
             <AvatarFallback className='bg-primary-100 font-bold text-primary-foreground'>
               {getInitials(profileName)}
@@ -62,11 +56,7 @@ export default function ProfileMenu({
         {/* User Identity Header Card */}
         <div className='flex select-none items-center gap-3 border-b border-border pb-3'>
           <Avatar className='h-9 w-9'>
-            <AvatarImage
-              src={avatarSrc}
-              alt={profileName}
-              className='object-cover'
-            />
+            <AvatarImage src={avatarSrc} alt='' className='object-cover' />
 
             <AvatarFallback className='bg-primary-100 font-bold text-primary-foreground'>
               {getInitials(profileName)}
@@ -80,6 +70,18 @@ export default function ProfileMenu({
 
         {/* Dropdown Options List */}
         <div className='flex flex-col gap-0 pt-3'>
+          <DropdownMenuItem
+            className='cursor-pointer gap-3 rounded-xl px-2 py-2 outline-none hover:bg-surface-subtle focus:bg-surface-subtle'
+            onClick={() => navigate('/profile')}
+          >
+            <UserRound
+              aria-hidden='true'
+              className='h-5 w-5 shrink-0 text-text-secondary'
+            />
+
+            <span className='text-sm font-medium text-text'>My Profile</span>
+          </DropdownMenuItem>
+
           <DropdownMenuItem
             className='cursor-pointer gap-3 rounded-xl px-2 py-2 outline-none hover:bg-surface-subtle focus:bg-surface-subtle'
             onClick={() => navigate('/favorites')}
@@ -96,9 +98,9 @@ export default function ProfileMenu({
             className='cursor-pointer gap-3 rounded-xl px-2 py-2 outline-none hover:bg-surface-subtle focus:bg-surface-subtle'
             onClick={() => navigate('/myorders')}
           >
-            <IoDocumentTextOutline
+            <ClipboardList
               aria-hidden='true'
-              className='shrink-0 text-xl text-text-secondary'
+              className='h-5 w-5 shrink-0 text-text-secondary'
             />
 
             <span className='text-sm font-medium text-text'>My Orders</span>
@@ -108,10 +110,7 @@ export default function ProfileMenu({
             className='cursor-pointer gap-3 rounded-xl px-2 py-2 text-primary-100 outline-none hover:bg-primary-100/10 focus:bg-primary-100/10 focus:text-primary-100'
             onClick={onLogout}
           >
-            <RiLogoutCircleLine
-              aria-hidden='true'
-              className='shrink-0 text-xl'
-            />
+            <LogOut aria-hidden='true' className='h-5 w-5 shrink-0' />
 
             <span className='text-sm font-bold'>Logout</span>
           </DropdownMenuItem>
