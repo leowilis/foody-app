@@ -1,7 +1,8 @@
+import { Suspense } from 'react';
 import { useNavbar } from './hooks/useNavbar';
 import Logo from '@/assets/logo-foody.svg';
 import CartButton from './CartButton';
-import ProfileMenu from './ProfileMenu';
+import LazyProfileMenu from './LazyProfileMenu';
 
 interface NavbarDesktopProps {
   navbar: ReturnType<typeof useNavbar>;
@@ -29,7 +30,12 @@ export default function NavbarDesktop({ navbar }: NavbarDesktopProps) {
         aria-label='Foody homepage'
         className='flex items-center gap-3 outline-none transition-opacity hover:opacity-80 focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-primary-100'
       >
-        <img src={Logo} alt='Foody logo' className='h-9 w-9 object-contain' />
+        <img
+          src={Logo}
+          alt=''
+          aria-hidden='true'
+          className='h-9 w-9 object-contain'
+        />
 
         <span className='text-2xl font-black tracking-tight text-text'>
           Foody
@@ -41,12 +47,14 @@ export default function NavbarDesktop({ navbar }: NavbarDesktopProps) {
         <div className='flex items-center gap-5'>
           <CartButton cartCount={cartCount} onClick={handleCartClick} />
 
-          <ProfileMenu
-            profileName={profileName}
-            profileAvatar={profileAvatar}
-            onLogout={handleLogout}
-            getInitials={getInitials}
-          />
+          <Suspense fallback={null}>
+            <LazyProfileMenu
+              profileName={profileName}
+              profileAvatar={profileAvatar}
+              onLogout={handleLogout}
+              getInitials={getInitials}
+            />
+          </Suspense>
         </div>
       ) : (
         <div className='flex items-center gap-3'>

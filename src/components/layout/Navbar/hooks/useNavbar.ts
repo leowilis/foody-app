@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import type { RootState } from '@/app/store';
-import { clearCart } from '@/features/cart/cartSlice';
 import type { CartResponse } from '@/features/cart/types';
+import { useLogout } from '@/features/auth/hooks/useLogout';
 import {
   AUTH_STORAGE_EVENT_NAME,
-  clearAuthSession,
   getAuthToken,
   getAuthUser,
 } from '@/features/auth/authStorage';
@@ -16,19 +15,16 @@ import {
   CART_API,
   CART_QUERY_KEY,
 } from '@/features/cart/constants/cart.constants';
-import { CHECKOUT_SUCCESS_STORAGE_KEY } from '@/config/storage.constants';
 
 // Manages navbar authentication state, cart count, and logout.
 export function useNavbar() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const queryClient = useQueryClient();
   const [isLogin, setIsLogin] = useState(false);
   const [profileName, setProfileName] = useState('User');
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const reduxCartCount = cartItems.reduce((total, item) => total + item.qty, 0);
-
+  const handleLogout = useLogout();
   const { data: cartData } = useQuery({
     queryKey: CART_QUERY_KEY,
     queryFn: async (): Promise<CartResponse> => {
@@ -74,29 +70,10 @@ export function useNavbar() {
     navigate('/mycart');
   };
 
-  const handleLogout = () => {
-    queryClient.clear();
-    clearAuthSession();
-    dispatch(clearCart());
-
-    try {
-      sessionStorage.removeItem(CHECKOUT_SUCCESS_STORAGE_KEY);
-    } catch {
-      // Session storage may be unavailable.
-    }
-
-    setIsLogin(false);
-
-    navigate('/auth', {
-      state: {
-        tab: 'signin',
-      },
-    });
-  };
-
   const getInitials = (name: string) =>
     name
-      .split(' ')
+      .trim()
+      .split(/\s+/)
       .filter(Boolean)
       .slice(0, 2)
       .map((part) => part[0]?.toUpperCase())

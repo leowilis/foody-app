@@ -1,7 +1,8 @@
+import { Suspense } from 'react';
 import { useNavbar } from './hooks/useNavbar';
 import Logo from '@/assets/logo-foody.svg';
 import CartButton from './CartButton';
-import ProfileMenu from './ProfileMenu';
+import LazyProfileMenu from './LazyProfileMenu';
 
 interface NavbarMobileProps {
   navbar: ReturnType<typeof useNavbar>;
@@ -42,12 +43,14 @@ export default function NavbarMobile({ navbar }: NavbarMobileProps) {
         <div className='flex items-center gap-4'>
           <CartButton cartCount={cartCount} onClick={handleCartClick} />
 
-          <ProfileMenu
-            profileName={profileName}
-            profileAvatar={profileAvatar}
-            onLogout={handleLogout}
-            getInitials={getInitials}
-          />
+          <Suspense fallback={null}>
+            <LazyProfileMenu
+              profileName={profileName}
+              profileAvatar={profileAvatar}
+              onLogout={handleLogout}
+              getInitials={getInitials}
+            />
+          </Suspense>
         </div>
       ) : (
         <div className='flex items-center gap-2'>
